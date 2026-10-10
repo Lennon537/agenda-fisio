@@ -1,0 +1,22 @@
+{
+  "name": "Fisioterapia & Pilates Vitalitá",
+  "short_name": "Fisio & Pilates",
+  "description": "Agendamento online de consultas de fisioterapia e aulas de pilates",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#064e3b",
+  "theme_color": "#064e3b",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=192&auto=format&fit=crop&q=80",
+      "sizes": "192x192",
+      "type": "image/jpeg"
+    },
+    {
+      "src": "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=512&auto=format&fit=crop&q=80",
+      "sizes": "512x512",
+      "type": "image/jpeg"
+    }
+  ]
+}
