@@ -59,12 +59,24 @@ export const InitialLoginView: React.FC<InitialLoginViewProps> = ({
     }
   };
 
-  // Submit de Paciente
+  // Submit de Paciente (com auto-detecção para administradores se informado)
   const handlePatientSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!email.trim()) {
-      onShowToast('Por favor, informe seu e-mail ou WhatsApp.');
+      onShowToast('Por favor, informe seu e-mail.');
+      return;
+    }
+
+    const lower = email.toLowerCase().trim();
+    if (lower.includes('dra') || lower.includes('ketllen')) {
+      onLoginSuccess('Dra. Ketllen Souza', 'admin', 'dra');
+      onShowToast('✓ Bem-vinda ao Painel Clínico, Dra. Ketllen!');
+      return;
+    }
+    if (lower.includes('admin') || lower.includes('webmaster') || lower.includes('lennon')) {
+      onLoginSuccess('Lennon (Webmaster)', 'admin', 'webmaster');
+      onShowToast('✓ Acesso de Webmaster concedido. Painel administrativo ativo!');
       return;
     }
 
@@ -178,24 +190,16 @@ export const InitialLoginView: React.FC<InitialLoginViewProps> = ({
           COLUNA DIREITA: PAINEL DE LOGIN (EXATAMENTE COMO NA IMAGEM)
           ============================================================== */}
       <div className="lovable-form-col">
-        {/* Barra Superior da Coluna Direita: Abas & Ambiente Seguro */}
+        {/* Barra Superior da Coluna Direita: Identificação de Ambiente */}
         <div className="lovable-form-topbar">
           <div className="lovable-role-switch">
             <button
               type="button"
-              className={`lovable-role-tab ${role === 'patient' ? 'active' : ''}`}
-              onClick={() => setRole('patient')}
+              className={`lovable-role-tab ${role === 'patient' ? 'active' : 'admin-tab'}`}
+              onClick={() => setRole(role === 'patient' ? 'admin' : 'patient')}
+              title="Clique para alternar entre Espaço do Paciente e Painel de Administrador"
             >
-              ESPAÇO DO PACIENTE
-            </button>
-            <span className="lovable-role-divider">•</span>
-            <button
-              type="button"
-              className={`lovable-role-tab admin-tab ${role === 'admin' ? 'active' : ''}`}
-              onClick={() => setRole('admin')}
-              title="Acesso exclusivo para Dra. Ketllen e Lennon Webmaster"
-            >
-              ADMINISTRADOR (2 CONTAS)
+              {role === 'patient' ? 'ESPAÇO DO PACIENTE' : 'PAINEL ADMINISTRATIVO (2 CONTAS)'}
             </button>
           </div>
 
@@ -303,28 +307,7 @@ export const InitialLoginView: React.FC<InitialLoginViewProps> = ({
                     className="lovable-signup-link"
                     onClick={onContinueAsGuest}
                   >
-                    Cadastre-se <ArrowRight size={14} style={{ display: 'inline', verticalAlign: 'middle', marginLeft: 2 }} />
-                  </button>
-                </div>
-
-                {/* Atalho Discreto para Testes */}
-                <div className="lovable-quick-test-bar">
-                  <button
-                    type="button"
-                    className="lovable-quick-demo-pill"
-                    onClick={handleQuickPatient}
-                    title="Preencher com dados de teste da paciente Mariana"
-                  >
-                    👤 Preencher paciente de teste (Mariana)
-                  </button>
-                  <button
-                    type="button"
-                    className="lovable-quick-demo-pill"
-                    onClick={onContinueAsGuest}
-                    title="Acessar a agenda diretamente sem cadastro"
-                  >
-                    <Calendar size={13} style={{ display: 'inline', marginRight: 4 }} />
-                    Ver agenda como visitante
+                    Cadastre-se <ArrowRight size={14} style={{ display: 'inline', verticalAlign: 'middle', marginLeft: 4 }} />
                   </button>
                 </div>
               </form>
@@ -453,19 +436,21 @@ export const InitialLoginView: React.FC<InitialLoginViewProps> = ({
             </div>
           )}
 
-          {/* Badge Inferior com Coração */}
-          <div className="lovable-quote-pill">
-            <Heart size={15} className="lovable-quote-heart" />
-            <span>Um passo de cada vez, com você.</span>
-          </div>
         </div>
 
-        {/* Rodapé da Coluna Direita */}
+        {/* Rodapé da Coluna Direita (Idêntico à Imagem) */}
         <footer className="lovable-form-footer">
           <span className="lovable-footer-copy">© 2026 Ketllen Souza Fisioterapia</span>
-          <span className="lovable-footer-bullet">•</span>
           <span className="lovable-footer-motto">
-            Feito para cuidar de você <Leaf size={12} className="lovable-footer-leaf" />
+            Feito para cuidar de você{' '}
+            <button
+              type="button"
+              className="lovable-footer-leaf-btn"
+              onClick={() => setRole(role === 'patient' ? 'admin' : 'patient')}
+              title="Acesso discreto ao Painel de Administrador"
+            >
+              <Leaf size={12} className="lovable-footer-leaf" />
+            </button>
           </span>
         </footer>
       </div>

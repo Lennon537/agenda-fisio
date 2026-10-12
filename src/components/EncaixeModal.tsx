@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   X,
   Clock,
@@ -10,10 +10,19 @@ import {
   ArrowRight,
   Send,
   Sparkles,
-  Calendar
+  Calendar,
+  Smartphone,
+  Globe,
+  ShieldCheck,
+  MessageCircle
 } from 'lucide-react';
 import { CareType, EncaixeRequest } from '@/types';
 import { CLINIC_INFO } from '@/data/clinicData';
+import {
+  openWhatsAppDirect,
+  WhatsAppSendMode,
+  isMobileDevice
+} from '@/utils/calendar';
 
 interface EncaixeModalProps {
   isOpen: boolean;
@@ -36,6 +45,13 @@ export const EncaixeModal: React.FC<EncaixeModalProps> = ({
   const [preferredShift, setPreferredShift] = useState<'manha' | 'tarde' | 'qualquer'>('qualquer');
   const [painLevel, setPainLevel] = useState<number>(7);
   const [reason, setReason] = useState('');
+  const [sendMode, setSendMode] = useState<WhatsAppSendMode>('app');
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setSendMode(isMobileDevice() ? 'app' : 'web');
+    }
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
@@ -76,7 +92,7 @@ export const EncaixeModal: React.FC<EncaixeModalProps> = ({
 
     onSubmitEncaixe(newEncaixe);
 
-    // Enviar mensagem direta para o WhatsApp da Ketllen Souza Fisioterapia
+    // Enviar mensagem direta para o WhatsApp da Dra. Ketllen Souza
     const careLabel = careType === 'fisioterapia' ? 'Fisioterapia' : 'Pilates';
     const shiftLabel =
       preferredShift === 'manha'
@@ -86,21 +102,26 @@ export const EncaixeModal: React.FC<EncaixeModalProps> = ({
         : 'Qualquer horário';
 
     const text =
-      `🌿 *SOLICITAÇÃO DE ENCAIXE - KETLLEN SOUZA FISIOTERAPIA* 🌿\n\n` +
-      `Olá! Gostaria de pedir um encaixe na agenda:\n\n` +
-      `📋 *Cuidado:* ${careLabel}\n` +
-      `⚡ *Nível de Dor:* ${painLevel}/10\n` +
+      `🌿 *SOLICITAÇÃO DE ENCAIXE • DRA. KETLLEN SOUZA* 🌿\n\n` +
+      `Olá, Dra. Ketllen! Gostaria de pedir um encaixe na sua agenda na clínica:\n\n` +
+      `📋 *Atendimento:* ${careLabel}\n` +
+      `⚡ *Nível de Dor/Desconforto:* ${painLevel}/10\n` +
       `🌅 *Preferência de Turno:* ${shiftLabel}\n` +
       `👤 *Paciente:* ${name}\n` +
-      `📱 *WhatsApp:* ${phone}\n` +
+      `📱 *Meu WhatsApp:* ${phone}\n` +
       (reason ? `📝 *Queixa / Motivo:* ${reason}\n` : '') +
-      `\n🎫 *Código:* #${newEncaixe.id}\n` +
-      `\n_Por favor, me avisem caso abra uma desistência! Obrigado(a)._`;
+      `\n🎫 *Código da Fila:* #${newEncaixe.id}\n` +
+      `\n_Por favor, me avise caso abra uma desistência na sua agenda! Muito obrigado(a)._`;
 
-    const encoded = encodeURIComponent(text);
-    window.open(`https://wa.me/${CLINIC_INFO.phone}?text=${encoded}`, '_blank');
+    const draNumber = CLINIC_INFO.draPhone || CLINIC_INFO.phone;
+    openWhatsAppDirect({
+      phone: draNumber,
+      text,
+      mode: sendMode,
+    });
 
-    onShowToast('✓ Solicitação de encaixe enviada com sucesso!');
+    const modeLabel = sendMode === 'web' ? 'WhatsApp Web' : 'Aplicativo WhatsApp';
+    onShowToast(`✓ Solicitação de encaixe enviada para a Dra. Ketllen via ${modeLabel}!`);
     onClose();
   };
 
@@ -237,9 +258,59 @@ export const EncaixeModal: React.FC<EncaixeModalProps> = ({
             />
           </div>
 
-          <button type="submit" className="btn-login-submit btn-encaixe-submit">
-            <Send size={16} />
-            <span>Enviar Solicitação de Encaixe</span>
+          {/* SELETOR DE CANAL: APLICATIVO VS WHATSAPP WEB */}
+          <div className="wa-dispatch-selector-box">
+            <div className="wa-dispatch-header">
+              <div className="wa-dispatch-title-row">
+                <span className="wa-dispatch-label">Enviar diretamente para:</span>
+                <span className="wa-dispatch-target-badge">
+                  <ShieldCheck size={13} />
+                  Dra. Ketllen Souza ({CLINIC_INFO.draPhoneFormatted || CLINIC_INFO.phoneFormatted})
+                </span>
+              </div>
+              <span className="wa-dispatch-sub">
+                Escolha por onde deseja abrir a conversa de encaixe:
+              </span>
+            </div>
+
+            <div className="wa-dispatch-toggle-grid">
+              <button
+                type="button"
+                className={`wa-toggle-card ${sendMode === 'app' ? 'active' : ''}`}
+                onClick={() => setSendMode('app')}
+              >
+                <div className="wa-toggle-icon">
+                  <Smartphone size={17} />
+                </div>
+                <div className="wa-toggle-texts">
+                  <strong>Aplicativo WhatsApp</strong>
+                  <span>Abre no App do celular ou computador</span>
+                </div>
+                {sendMode === 'app' && <span className="wa-toggle-check">✓</span>}
+              </button>
+
+              <button
+                type="button"
+                className={`wa-toggle-card ${sendMode === 'web' ? 'active' : ''}`}
+                onClick={() => setSendMode('web')}
+              >
+                <div className="wa-toggle-icon">
+                  <Globe size={17} />
+                </div>
+                <div className="wa-toggle-texts">
+                  <strong>WhatsApp Web</strong>
+                  <span>Abre direto no navegador (sem instalar)</span>
+                </div>
+                {sendMode === 'web' && <span className="wa-toggle-check">✓</span>}
+              </button>
+            </div>
+          </div>
+
+          <button type="submit" className="btn-login-submit btn-encaixe-submit btn-wa-submit">
+            <MessageCircle size={18} />
+            <span>
+              Enviar Encaixe para Dra. Ketllen ({sendMode === 'web' ? 'WhatsApp Web' : 'Aplicativo'})
+            </span>
           </button>
         </form>
       </div>

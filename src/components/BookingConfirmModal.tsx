@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   X,
   Calendar,
@@ -12,11 +12,19 @@ import {
   Send,
   MessageCircle,
   Activity,
-  Leaf
+  Leaf,
+  Smartphone,
+  Globe,
+  ShieldCheck
 } from 'lucide-react';
 import { CareType, ScheduledAppointment } from '@/types';
 import { CLINIC_INFO } from '@/data/clinicData';
-import { generateGoogleCalendarUrl } from '@/utils/calendar';
+import {
+  generateGoogleCalendarUrl,
+  openWhatsAppDirect,
+  WhatsAppSendMode,
+  isMobileDevice
+} from '@/utils/calendar';
 
 interface BookingConfirmModalProps {
   isOpen: boolean;
@@ -41,8 +49,15 @@ export const BookingConfirmModal: React.FC<BookingConfirmModalProps> = ({
   const [phone, setPhone] = useState('');
   const [isFirstTime, setIsFirstTime] = useState<'sim' | 'nao'>('sim');
   const [reason, setReason] = useState('');
+  const [sendMode, setSendMode] = useState<WhatsAppSendMode>('app');
 
   const [confirmedAppointment, setConfirmedAppointment] = useState<ScheduledAppointment | null>(null);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setSendMode(isMobileDevice() ? 'app' : 'web');
+    }
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
@@ -73,6 +88,25 @@ export const BookingConfirmModal: React.FC<BookingConfirmModalProps> = ({
     const days = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado'];
     const months = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
     return `${days[d.getDay()]}, ${day} de ${months[d.getMonth()]}`;
+  };
+
+  const buildWhatsAppMessage = (apt: ScheduledAppointment) => {
+    const careTitle = apt.careType === 'fisioterapia' ? 'Fisioterapia' : 'Pilates';
+    const dateFormatted = formatDateDisplay(apt.date);
+
+    return (
+      `🌿 *CONFIRMAÇÃO DE AGENDAMENTO • DRA. KETLLEN SOUZA* 🌿\n\n` +
+      `Olá, Dra. Ketllen! Acabei de solicitar meu agendamento pelo site e gostaria de confirmar meu horário com a senhora:\n\n` +
+      `📋 *Atendimento:* ${careTitle}\n` +
+      `📅 *Data da Sessão:* ${dateFormatted}\n` +
+      `⏰ *Horário:* ${apt.time} (50 min)\n\n` +
+      `👤 *Nome do Paciente:* ${apt.patientName}\n` +
+      `📱 *Meu WhatsApp:* ${apt.phone}\n` +
+      `✨ *Primeira vez na clínica?* ${isFirstTime === 'sim' ? 'Sim, primeira sessão' : 'Não, já sou paciente'}\n` +
+      (apt.notes ? `🎯 *Queixa / Motivo da Consulta:* ${apt.notes}\n` : '') +
+      `\n🎫 *Código da Reserva:* #${apt.id}\n` +
+      `\n_Por favor, confirme se este horário está disponível para a senhora. Muito obrigado(a)!_`
+    );
   };
 
   const handleOpenGoogleCalendar = (apt: ScheduledAppointment) => {
@@ -117,27 +151,18 @@ export const BookingConfirmModal: React.FC<BookingConfirmModalProps> = ({
     onConfirmBooking(newAppointment);
     setConfirmedAppointment(newAppointment);
 
-    // Enviar mensagem no WhatsApp da Ketllen Souza Fisioterapia
-    const careTitle = careType === 'fisioterapia' ? 'Fisioterapia' : 'Pilates';
-    const dateFormatted = formatDateDisplay(dateIso);
+    // Enviar mensagem diretamente para o WhatsApp da Dra. Ketllen Souza
+    const text = buildWhatsAppMessage(newAppointment);
+    const draNumber = CLINIC_INFO.draPhone || CLINIC_INFO.phone;
 
-    const text =
-      `🌿 *AGENDAMENTO DE SESSÃO - KETLLEN SOUZA FISIOTERAPIA* 🌿\n\n` +
-      `Olá! Gostaria de confirmar meu agendamento realizado no site:\n\n` +
-      `📋 *Cuidado:* ${careTitle}\n` +
-      `📅 *Data:* ${dateFormatted}\n` +
-      `⏰ *Horário:* ${time}\n\n` +
-      `👤 *Paciente:* ${patientName}\n` +
-      `📱 *WhatsApp:* ${phone}\n` +
-      `✨ *Primeira vez na clínica?* ${isFirstTime === 'sim' ? 'Sim' : 'Não, já sou paciente'}\n` +
-      (reason ? `🎯 *Queixa / Motivo:* ${reason}\n` : '') +
-      `\n🎫 *Código do Atendimento:* #${bookingId}\n` +
-      `\n_Aguardo a confirmação da equipe. Obrigado(a)!_`;
+    openWhatsAppDirect({
+      phone: draNumber,
+      text,
+      mode: sendMode,
+    });
 
-    const encoded = encodeURIComponent(text);
-    window.open(`https://wa.me/${CLINIC_INFO.phone}?text=${encoded}`, '_blank');
-
-    onShowToast(`✓ Agendamento #${bookingId} solicitado com sucesso!`);
+    const modeLabel = sendMode === 'web' ? 'WhatsApp Web' : 'Aplicativo WhatsApp';
+    onShowToast(`✓ Agendamento #${bookingId} solicitado! Enviando diretamente para a Dra. Ketllen via ${modeLabel}.`);
   };
 
   return (
@@ -175,6 +200,48 @@ export const BookingConfirmModal: React.FC<BookingConfirmModalProps> = ({
               <div className="success-row">
                 <span>Paciente:</span>
                 <strong>{confirmedAppointment.patientName}</strong>
+              </div>
+              <div className="success-row">
+                <span>Destinatário:</span>
+                <strong style={{ color: '#10b981' }}>Dra. Ketllen Souza ({CLINIC_INFO.draPhoneFormatted || CLINIC_INFO.phoneFormatted})</strong>
+              </div>
+            </div>
+
+            {/* Ações de Reenvio WhatsApp (App & Web) */}
+            <div className="success-wa-resend-block">
+              <span className="wa-resend-prompt">Deseja reenviar ou alternar o modo de envio?</span>
+              <div className="wa-resend-btn-group">
+                <button
+                  type="button"
+                  className="btn-wa-resend-item"
+                  onClick={() =>
+                    openWhatsAppDirect({
+                      phone: CLINIC_INFO.draPhone || CLINIC_INFO.phone,
+                      text: buildWhatsAppMessage(confirmedAppointment),
+                      mode: 'app',
+                    })
+                  }
+                  title="Abrir no aplicativo WhatsApp"
+                >
+                  <Smartphone size={15} />
+                  <span>Abrir no App</span>
+                </button>
+
+                <button
+                  type="button"
+                  className="btn-wa-resend-item"
+                  onClick={() =>
+                    openWhatsAppDirect({
+                      phone: CLINIC_INFO.draPhone || CLINIC_INFO.phone,
+                      text: buildWhatsAppMessage(confirmedAppointment),
+                      mode: 'web',
+                    })
+                  }
+                  title="Abrir no WhatsApp Web pelo navegador"
+                >
+                  <Globe size={15} />
+                  <span>WhatsApp Web</span>
+                </button>
               </div>
             </div>
 
@@ -295,9 +362,59 @@ export const BookingConfirmModal: React.FC<BookingConfirmModalProps> = ({
                 />
               </div>
 
-              <button type="submit" className="btn-login-submit">
-                <MessageCircle size={17} />
-                <span>Confirmar e Enviar no WhatsApp</span>
+              {/* SELETOR DE CANAL: APLICATIVO VS WHATSAPP WEB */}
+              <div className="wa-dispatch-selector-box">
+                <div className="wa-dispatch-header">
+                  <div className="wa-dispatch-title-row">
+                    <span className="wa-dispatch-label">Enviar diretamente para:</span>
+                    <span className="wa-dispatch-target-badge">
+                      <ShieldCheck size={13} />
+                      Dra. Ketllen Souza ({CLINIC_INFO.draPhoneFormatted || CLINIC_INFO.phoneFormatted})
+                    </span>
+                  </div>
+                  <span className="wa-dispatch-sub">
+                    Escolha por onde deseja abrir a conversa de confirmação:
+                  </span>
+                </div>
+
+                <div className="wa-dispatch-toggle-grid">
+                  <button
+                    type="button"
+                    className={`wa-toggle-card ${sendMode === 'app' ? 'active' : ''}`}
+                    onClick={() => setSendMode('app')}
+                  >
+                    <div className="wa-toggle-icon">
+                      <Smartphone size={17} />
+                    </div>
+                    <div className="wa-toggle-texts">
+                      <strong>Aplicativo WhatsApp</strong>
+                      <span>Abre no App do celular ou computador</span>
+                    </div>
+                    {sendMode === 'app' && <span className="wa-toggle-check">✓</span>}
+                  </button>
+
+                  <button
+                    type="button"
+                    className={`wa-toggle-card ${sendMode === 'web' ? 'active' : ''}`}
+                    onClick={() => setSendMode('web')}
+                  >
+                    <div className="wa-toggle-icon">
+                      <Globe size={17} />
+                    </div>
+                    <div className="wa-toggle-texts">
+                      <strong>WhatsApp Web</strong>
+                      <span>Abre direto no navegador (sem instalar)</span>
+                    </div>
+                    {sendMode === 'web' && <span className="wa-toggle-check">✓</span>}
+                  </button>
+                </div>
+              </div>
+
+              <button type="submit" className="btn-login-submit btn-wa-submit">
+                <MessageCircle size={18} />
+                <span>
+                  Confirmar e Enviar para Dra. Ketllen ({sendMode === 'web' ? 'WhatsApp Web' : 'Aplicativo'})
+                </span>
               </button>
             </form>
           </>

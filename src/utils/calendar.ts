@@ -89,3 +89,90 @@ export function generateWhatsAppReminderUrl({
 
   return `https://wa.me/${phoneWithCountry}?text=${text}`;
 }
+
+export type WhatsAppSendMode = 'auto' | 'app' | 'web';
+
+/**
+ * Detecta se o dispositivo do usuário é móvel (smartphone ou tablet)
+ */
+export function isMobileDevice(): boolean {
+  if (typeof window === 'undefined') return false;
+  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth < 768;
+}
+
+/**
+ * Gera as URLs formatadas para Envio de WhatsApp:
+ * - App: protocolo nativo (whatsapp://send...)
+ * - Web: WhatsApp Web no navegador (https://web.whatsapp.com/send...)
+ * - Universal / wa.me: página oficial com redirecionamento
+ */
+export function getWhatsAppUrls({
+  phone,
+  text,
+}: {
+  phone: string;
+  text: string;
+}) {
+  const cleanPhone = phone.replace(/\D/g, '');
+  const phoneWithCountry = cleanPhone.startsWith('55') ? cleanPhone : `55${cleanPhone}`;
+  const encodedText = encodeURIComponent(text);
+
+  return {
+    app: `whatsapp://send?phone=${phoneWithCountry}&text=${encodedText}`,
+    web: `https://web.whatsapp.com/send?phone=${phoneWithCountry}&text=${encodedText}`,
+    universal: `https://api.whatsapp.com/send?phone=${phoneWithCountry}&text=${encodedText}`,
+    waMe: `https://wa.me/${phoneWithCountry}?text=${encodedText}`,
+    phoneWithCountry,
+  };
+}
+
+/**
+ * Abre o WhatsApp diretamente respeitando se o usuário quer usar Aplicativo ou WhatsApp Web,
+ * enviando diretamente para o número da Dra. Ketllen.
+ */
+export function openWhatsAppDirect({
+  phone,
+  text,
+  mode = 'auto',
+}: {
+  phone: string;
+  text: string;
+  mode?: WhatsAppSendMode;
+}) {
+  if (typeof window === 'undefined') return;
+
+  const urls = getWhatsAppUrls({ phone, text });
+
+  if (mode === 'web') {
+    window.open(urls.web, '_blank', 'noopener,noreferrer');
+    return;
+  }
+
+  if (mode === 'app') {
+    const isMobile = isMobileDevice();
+    if (isMobile) {
+      // No celular, abre o aplicativo diretamente
+      window.location.href = urls.app;
+      // Fallback para api se o protocolo demorar
+      setTimeout(() => {
+        window.open(urls.universal, '_blank');
+      }, 700);
+    } else {
+      // No desktop, tenta protocolo ou universal
+      window.open(urls.universal, '_blank', 'noopener,noreferrer');
+    }
+    return;
+  }
+
+  // Modo auto:
+  if (isMobileDevice()) {
+    window.location.href = urls.app;
+    setTimeout(() => {
+      window.open(urls.universal, '_blank');
+    }, 700);
+  } else {
+    // No computador, abre direto no WhatsApp Web (sem tela intermediária chata)
+    window.open(urls.web, '_blank', 'noopener,noreferrer');
+  }
+}
+

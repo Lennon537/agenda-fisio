@@ -51,7 +51,16 @@ export interface ClinicalEvolution {
   observations: string;
 }
 
-// Exercícios e Orientações para Casa
+// Exercícios e Orientações para Casa com Demonstração Visual
+export interface HomeExerciseVisualGuide {
+  category: 'alivio' | 'fortalecimento' | 'mobilidade' | 'respiracao';
+  badge: string; // ex: "Postura & Alívio Lombar"
+  targetMuscle: string; // ex: "Glúteos e Estabilizadores da Coluna"
+  steps: string[];
+  postureTips: string;
+  iconType: 'spine' | 'breath' | 'stretch' | 'strength';
+}
+
 export interface HomeExercise {
   id: string;
   title: string;
@@ -59,6 +68,8 @@ export interface HomeExercise {
   frequency: string;
   instructions: string;
   careType: CareType;
+  visualGuide?: HomeExerciseVisualGuide;
+  completedToday?: boolean;
 }
 
 // Ficha de Prontuário do Paciente
@@ -72,6 +83,28 @@ export interface PatientMedicalRecord {
   evolutions: ClinicalEvolution[];
   homeExercises: HomeExercise[];
   updatedAt: string;
+}
+
+// Bloqueio Rápido de Horários e Folgas da Clínica
+export interface BlockedSlot {
+  id: string;
+  date: string; // YYYY-MM-DD
+  time?: string; // Se omitido, bloqueia o dia todo
+  shift?: 'manha' | 'tarde' | 'dia-todo';
+  reason: string; // ex: "Folga na sexta", "Feriado", "Congresso de Fisioterapia"
+  createdAt: string;
+}
+
+// Avaliações e Depoimentos dos Pacientes
+export interface ClinicReview {
+  id: string;
+  patientName: string;
+  rating: number; // 1 a 5
+  careType: CareType;
+  comment: string;
+  tags: string[]; // ex: "Alívio da Dor", "Atendimento Humanizado"
+  date: string;
+  verified: boolean;
 }
 
 export type ActiveNavTab = 'agendar' | 'agendamentos' | 'perfil' | 'painel-dra';

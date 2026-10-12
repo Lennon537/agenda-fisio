@@ -20,11 +20,15 @@ import {
   PatientUser,
   PatientMedicalRecord,
   AdminType,
+  BlockedSlot,
+  ClinicReview,
 } from '@/types';
 import {
   INITIAL_APPOINTMENTS,
   INITIAL_ENCAIXES,
   INITIAL_MEDICAL_RECORDS,
+  INITIAL_BLOCKED_SLOTS,
+  INITIAL_REVIEWS,
 } from '@/data/clinicData';
 import { Info } from 'lucide-react';
 
@@ -52,6 +56,8 @@ export default function KetllenSouzaFisioPage() {
   const [appointments, setAppointments] = useState<ScheduledAppointment[]>([]);
   const [encaixes, setEncaixes] = useState<EncaixeRequest[]>([]);
   const [medicalRecords, setMedicalRecords] = useState<PatientMedicalRecord[]>([]);
+  const [blockedSlots, setBlockedSlots] = useState<BlockedSlot[]>([]);
+  const [reviews, setReviews] = useState<ClinicReview[]>([]);
   const [currentUser, setCurrentUser] = useState<PatientUser>({
     name: 'Mariana Duarte',
     phone: '(11) 98765-4321',
@@ -63,7 +69,9 @@ export default function KetllenSouzaFisioPage() {
   // Carregar dados salvos no localStorage
   useEffect(() => {
     try {
-      const savedTheme = localStorage.getItem('ketlen_theme') as 'light' | 'dark' | null;
+      const urlParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null;
+      const paramTheme = urlParams?.get('theme') as 'light' | 'dark' | null;
+      const savedTheme = (paramTheme || localStorage.getItem('ketlen_theme')) as 'light' | 'dark' | null;
       if (savedTheme) {
         setTheme(savedTheme);
         document.documentElement.setAttribute('data-theme', savedTheme);
@@ -71,8 +79,23 @@ export default function KetllenSouzaFisioPage() {
         document.documentElement.setAttribute('data-theme', 'light');
       }
 
+      const paramAuth = urlParams?.get('auth');
+      const paramTab = urlParams?.get('tab') as ActiveNavTab | null;
+      if (paramTab) {
+        setActiveTab(paramTab);
+      }
+
+      const paramModal = urlParams?.get('modal');
+      if (paramModal === 'booking') {
+        setIsBookingModalOpen(true);
+      }
+
       const savedAuth = localStorage.getItem('ketlen_auth_session');
-      if (savedAuth) {
+      if (paramAuth === 'true') {
+        setIsAuthenticated(true);
+        setUserLoggedIn('Mariana Duarte');
+        setUserRole('patient');
+      } else if (savedAuth) {
         const authData = JSON.parse(savedAuth);
         setIsAuthenticated(true);
         setUserLoggedIn(authData.name);
@@ -103,6 +126,21 @@ export default function KetllenSouzaFisioPage() {
         localStorage.setItem('ketlen_medical_records', JSON.stringify(INITIAL_MEDICAL_RECORDS));
       }
 
+      const savedBlocks = localStorage.getItem('ketlen_blocked_slots');
+      if (savedBlocks) {
+        setBlockedSlots(JSON.parse(savedBlocks));
+      } else {
+        setBlockedSlots(INITIAL_BLOCKED_SLOTS);
+        localStorage.setItem('ketlen_blocked_slots', JSON.stringify(INITIAL_BLOCKED_SLOTS));
+      }
+
+      const savedReviews = localStorage.getItem('ketlen_reviews');
+      if (savedReviews) {
+        setReviews(JSON.parse(savedReviews));
+      } else {
+        setReviews(INITIAL_REVIEWS);
+        localStorage.setItem('ketlen_reviews', JSON.stringify(INITIAL_REVIEWS));
+      }
 
       const savedUser = localStorage.getItem('ketlen_user');
       if (savedUser) {
@@ -113,6 +151,13 @@ export default function KetllenSouzaFisioPage() {
       console.error('Erro ao ler localStorage', e);
     }
   }, []);
+
+  const handleAddReview = (newRev: ClinicReview) => {
+    const updated = [newRev, ...reviews];
+    setReviews(updated);
+    localStorage.setItem('ketlen_reviews', JSON.stringify(updated));
+    showToast('✓ Sua avaliação foi publicada com sucesso! Agradecemos o carinho.');
+  };
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
@@ -270,6 +315,10 @@ export default function KetllenSouzaFisioPage() {
             <ScheduleView
               onOpenBookingModal={handleOpenBookingModal}
               onOpenEncaixeModal={handleOpenEncaixeModal}
+              blockedSlots={blockedSlots}
+              reviews={reviews}
+              onAddReview={handleAddReview}
+              patientName={userLoggedIn || currentUser.name}
             />
           )}
 
@@ -296,6 +345,7 @@ export default function KetllenSouzaFisioPage() {
               appointments={appointments}
               encaixes={encaixes}
               medicalRecords={medicalRecords}
+              blockedSlots={blockedSlots}
               onUpdateAppointments={(apts) => {
                 setAppointments(apts);
                 localStorage.setItem('ketlen_appointments', JSON.stringify(apts));
@@ -307,6 +357,10 @@ export default function KetllenSouzaFisioPage() {
               onUpdateMedicalRecords={(recs) => {
                 setMedicalRecords(recs);
                 localStorage.setItem('ketlen_medical_records', JSON.stringify(recs));
+              }}
+              onUpdateBlockedSlots={(slots) => {
+                setBlockedSlots(slots);
+                localStorage.setItem('ketlen_blocked_slots', JSON.stringify(slots));
               }}
               onShowToast={showToast}
               userLoggedIn={userLoggedIn}

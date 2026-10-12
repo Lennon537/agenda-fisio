@@ -14,18 +14,31 @@ import {
   Clock,
   ShieldCheck,
   Heart,
+  Star,
+  MessageSquarePlus,
+  CalendarX,
+  X,
+  CheckCircle2
 } from 'lucide-react';
-import { CareType } from '@/types';
+import { CareType, BlockedSlot, ClinicReview } from '@/types';
 import { CLINIC_INFO, TIME_SLOTS } from '@/data/clinicData';
 
 interface ScheduleViewProps {
   onOpenBookingModal: (careType: CareType, dateIso: string, time: string) => void;
   onOpenEncaixeModal: (careType: CareType) => void;
+  blockedSlots?: BlockedSlot[];
+  reviews?: ClinicReview[];
+  onAddReview?: (review: ClinicReview) => void;
+  patientName?: string;
 }
 
 export const ScheduleView: React.FC<ScheduleViewProps> = ({
   onOpenBookingModal,
   onOpenEncaixeModal,
+  blockedSlots = [],
+  reviews = [],
+  onAddReview,
+  patientName = '',
 }) => {
   // Passo 1: Cuidado selecionado
   const [careType, setCareType] = useState<CareType>('fisioterapia');
@@ -37,6 +50,14 @@ export const ScheduleView: React.FC<ScheduleViewProps> = ({
 
   // Passo 3: Horário selecionado
   const [selectedTime, setSelectedTime] = useState<string>('14:00');
+
+  // Modal de Avaliação do Paciente
+  const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
+  const [revName, setRevName] = useState(patientName || 'Mariana Duarte');
+  const [revRating, setRevRating] = useState(5);
+  const [revCare, setRevCare] = useState<CareType>('fisioterapia');
+  const [revComment, setRevComment] = useState('');
+  const [revTag, setRevTag] = useState('Alívio da Dor');
 
   const monthNames = [
     'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
@@ -239,17 +260,21 @@ export const ScheduleView: React.FC<ScheduleViewProps> = ({
                 const isToday = dayNum === 10;
                 const isPast = dayNum < 10;
 
+                const dayIso = `${currentYear}-${monthStr}-${String(dayNum).padStart(2, '0')}`;
+                const dayBlock = blockedSlots.find((b) => b.date === dayIso);
+
                 return (
                   <button
                     key={`day-${dayNum}`}
                     type="button"
-                    className={`calendar-day-button ${isSelected ? 'selected' : ''} ${isToday ? 'today' : ''} ${isPast ? 'past' : ''}`}
+                    className={`calendar-day-button ${isSelected ? 'selected' : ''} ${isToday ? 'today' : ''} ${isPast ? 'past' : ''} ${dayBlock ? 'day-blocked' : ''}`}
                     onClick={() => {
                       if (!isPast) {
                         setSelectedDayNumber(dayNum);
                       }
                     }}
                     disabled={isPast}
+                    title={dayBlock ? `Clínica Bloqueada: ${dayBlock.reason}` : undefined}
                   >
                     <span>{dayNum}</span>
                   </button>
@@ -263,9 +288,15 @@ export const ScheduleView: React.FC<ScheduleViewProps> = ({
                 <span className="legend-selected-dot" />
                 <span>Dia selecionado</span>
               </div>
-              <div className="cal-legend-right">
-                <span className="legend-available-dot" />
-                <span>Datas para solicitação</span>
+              <div className="cal-legend-right" style={{ display: 'flex', gap: 14 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                  <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#ef4444', display: 'inline-block' }} />
+                  <span>Folga / Manutenção</span>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                  <span className="legend-available-dot" />
+                  <span>Datas livres</span>
+                </div>
               </div>
             </div>
           </div>
@@ -280,76 +311,180 @@ export const ScheduleView: React.FC<ScheduleViewProps> = ({
             <h2 className="step-title-text">Escolha o horário</h2>
           </div>
 
-          <div className="time-slots-card-container">
-            {/* Cabeçalho do Card de Horários */}
-            <div className="slots-card-header">
-              <div className="slots-header-text">
-                <h3 className="slots-date-title">{dateFormattedDisplay}</h3>
-                <p className="slots-sub">
-                  {careType === 'fisioterapia' ? 'Fisioterapia' : 'Pilates'} · Preferência de horário
+          {(() => {
+            const currentBlockedSlot = blockedSlots.find((b) => b.date === selectedDateIso);
+            const isAllDayBlocked = currentBlockedSlot?.shift === 'dia-todo';
+            const isMorningBlocked = isAllDayBlocked || currentBlockedSlot?.shift === 'manha';
+            const isAfternoonBlocked = isAllDayBlocked || currentBlockedSlot?.shift === 'tarde';
+
+            return (
+              <div className="time-slots-card-container">
+                {/* Cabeçalho do Card de Horários */}
+                <div className="slots-card-header">
+                  <div className="slots-header-text">
+                    <h3 className="slots-date-title">{dateFormattedDisplay}</h3>
+                    <p className="slots-sub">
+                      {careType === 'fisioterapia' ? 'Fisioterapia' : 'Pilates'} · Preferência de horário
+                    </p>
+                  </div>
+                  <span className="demo-tag-badge">Demonstrativo</span>
+                </div>
+
+                {/* Banner de Aviso caso haja bloqueio */}
+                {currentBlockedSlot && (
+                  <div className="blocked-day-notice-box">
+                    <CalendarX size={20} style={{ flexShrink: 0 }} />
+                    <div>
+                      <strong>Horário Bloqueado: {currentBlockedSlot.reason}</strong>
+                      <p style={{ margin: '2px 0 0', fontSize: '0.78rem' }}>
+                        {isAllDayBlocked
+                          ? 'A clínica estará fechada nesta data. Por favor, escolha outro dia no calendário ou solicite um encaixe prioritário abaixo.'
+                          : isMorningBlocked
+                          ? 'O turno da manhã está em folga/manutenção. Horários da tarde continuam disponíveis.'
+                          : 'O turno da tarde está bloqueado. Horários da manhã continuam disponíveis.'}
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                {/* Turno Manhã */}
+                <div className="slots-shift-group">
+                  <div className="shift-label-header">
+                    <Sun size={15} className="shift-icon sun" />
+                    <span>Manhã {isMorningBlocked && '(Bloqueado)'}</span>
+                  </div>
+                  <div className="slots-buttons-grid">
+                    {TIME_SLOTS.manha.map((timeStr) => (
+                      <button
+                        key={timeStr}
+                        type="button"
+                        className={`slot-time-pill ${selectedTime === timeStr ? 'selected' : ''} ${isMorningBlocked ? 'blocked' : ''}`}
+                        onClick={() => !isMorningBlocked && setSelectedTime(timeStr)}
+                        disabled={isMorningBlocked}
+                        title={isMorningBlocked ? 'Manhã bloqueada' : undefined}
+                      >
+                        {timeStr}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Turno Tarde */}
+                <div className="slots-shift-group">
+                  <div className="shift-label-header">
+                    <CloudSun size={15} className="shift-icon cloud-sun" />
+                    <span>Tarde {isAfternoonBlocked && '(Bloqueado)'}</span>
+                  </div>
+                  <div className="slots-buttons-grid">
+                    {TIME_SLOTS.tarde.map((timeStr) => (
+                      <button
+                        key={timeStr}
+                        type="button"
+                        className={`slot-time-pill ${selectedTime === timeStr ? 'selected' : ''} ${isAfternoonBlocked ? 'blocked' : ''}`}
+                        onClick={() => !isAfternoonBlocked && setSelectedTime(timeStr)}
+                        disabled={isAfternoonBlocked}
+                        title={isAfternoonBlocked ? 'Tarde bloqueada' : undefined}
+                      >
+                        {timeStr}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Botão de Solicitar Agendamento */}
+                <button
+                  type="button"
+                  className="btn-submit-booking"
+                  onClick={handleBookingSubmit}
+                  disabled={isAllDayBlocked}
+                  style={isAllDayBlocked ? { opacity: 0.5, cursor: 'not-allowed' } : undefined}
+                >
+                  <span>{isAllDayBlocked ? 'Dia Fechado para Atendimento' : 'Solicitar agendamento'}</span>
+                  <ArrowRight size={17} />
+                </button>
+
+                {/* Aviso informativo com ícone de escudo */}
+                <p className="booking-disclaimer">
+                  <ShieldCheck size={14} className="disclaimer-shield-icon" />
+                  <span>O horário será confirmado pela clínica após o pedido.</span>
                 </p>
               </div>
-              <span className="demo-tag-badge">Demonstrativo</span>
-            </div>
-
-            {/* Turno Manhã */}
-            <div className="slots-shift-group">
-              <div className="shift-label-header">
-                <Sun size={15} className="shift-icon sun" />
-                <span>Manhã</span>
-              </div>
-              <div className="slots-buttons-grid">
-                {TIME_SLOTS.manha.map((timeStr) => (
-                  <button
-                    key={timeStr}
-                    type="button"
-                    className={`slot-time-pill ${selectedTime === timeStr ? 'selected' : ''}`}
-                    onClick={() => setSelectedTime(timeStr)}
-                  >
-                    {timeStr}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Turno Tarde */}
-            <div className="slots-shift-group">
-              <div className="shift-label-header">
-                <CloudSun size={15} className="shift-icon cloud-sun" />
-                <span>Tarde</span>
-              </div>
-              <div className="slots-buttons-grid">
-                {TIME_SLOTS.tarde.map((timeStr) => (
-                  <button
-                    key={timeStr}
-                    type="button"
-                    className={`slot-time-pill ${selectedTime === timeStr ? 'selected' : ''}`}
-                    onClick={() => setSelectedTime(timeStr)}
-                  >
-                    {timeStr}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Botão de Solicitar Agendamento */}
-            <button
-              type="button"
-              className="btn-submit-booking"
-              onClick={handleBookingSubmit}
-            >
-              <span>Solicitar agendamento</span>
-              <ArrowRight size={17} />
-            </button>
-
-            {/* Aviso informativo com ícone de escudo */}
-            <p className="booking-disclaimer">
-              <ShieldCheck size={14} className="disclaimer-shield-icon" />
-              <span>O horário será confirmado pela clínica após o pedido.</span>
-            </p>
-          </div>
+            );
+          })()}
         </section>
       </div>
+
+      {/* =========================================================
+          SEÇÃO DE AVALIAÇÕES & DEPOIMENTOS REAIS DE PACIENTES
+          ========================================================= */}
+      <section className="reviews-section-card">
+        <div className="reviews-header-strip">
+          <div className="reviews-rating-summary">
+            <span className="stars-score-large">5.0</span>
+            <div>
+              <div className="stars-row-yellow">
+                <Star size={18} fill="#f59e0b" color="#f59e0b" />
+                <Star size={18} fill="#f59e0b" color="#f59e0b" />
+                <Star size={18} fill="#f59e0b" color="#f59e0b" />
+                <Star size={18} fill="#f59e0b" color="#f59e0b" />
+                <Star size={18} fill="#f59e0b" color="#f59e0b" />
+              </div>
+              <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+                Baseado em <strong>{reviews.length || 48} avaliações reais e verificadas</strong>
+              </span>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            className="btn-open-review-modal"
+            onClick={() => setIsReviewModalOpen(true)}
+          >
+            <MessageSquarePlus size={16} />
+            <span>Deixar Minha Avaliação</span>
+          </button>
+        </div>
+
+        <div className="reviews-cards-grid">
+          {reviews.map((rev) => (
+            <div key={rev.id} className="review-testimonial-card">
+              <div className="review-patient-header">
+                <div>
+                  <h4 className="review-patient-name">
+                    {rev.patientName}
+                    {rev.verified && (
+                      <span title="Paciente Verificado" style={{ display: 'inline-flex' }}>
+                        <CheckCircle2 size={14} className="verified-icon" />
+                      </span>
+                    )}
+                  </h4>
+                  <div className="stars-row-yellow" style={{ marginTop: 2 }}>
+                    {Array.from({ length: rev.rating }).map((_, i) => (
+                      <Star key={i} size={13} fill="#f59e0b" color="#f59e0b" />
+                    ))}
+                  </div>
+                </div>
+
+                <span className="review-care-badge">
+                  {rev.careType === 'fisioterapia' ? 'Fisioterapia' : 'Pilates'}
+                </span>
+              </div>
+
+              <p className="review-text-quote">"{rev.comment}"</p>
+
+              <div className="review-tags-row">
+                {rev.tags.map((tag, idx) => (
+                  <span key={idx} className="review-tag-pill">
+                    #{tag}
+                  </span>
+                ))}
+              </div>
+
+              <span className="review-date-foot">Publicado em {rev.date}</span>
+            </div>
+          ))}
+        </div>
+      </section>
 
       {/* =========================================================
           BANNER INFERIOR: NÃO ENCONTROU O MELHOR HORÁRIO? (ENCAIXE)
@@ -385,6 +520,140 @@ export const ScheduleView: React.FC<ScheduleViewProps> = ({
           </span>
         </div>
       </footer>
+
+      {/* =========================================================
+          MODAL: DEIXAR AVALIAÇÃO DE PACIENTE
+          ========================================================= */}
+      {isReviewModalOpen && (
+        <div className="modal-backdrop-login" onClick={() => setIsReviewModalOpen(false)}>
+          <div className="review-modal-card" onClick={(e) => e.stopPropagation()}>
+            <button
+              type="button"
+              className="login-close-btn"
+              onClick={() => setIsReviewModalOpen(false)}
+            >
+              <X size={18} />
+            </button>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <div className="brand-logo-circle" style={{ background: '#fef3c7', color: '#d97706' }}>
+                <Star size={20} fill="#d97706" />
+              </div>
+              <div>
+                <h3 className="section-title" style={{ margin: 0 }}>Compartilhe sua Experiência</h3>
+                <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', margin: 0 }}>
+                  Sua opinião ajuda outros pacientes a conhecerem nosso trabalho.
+                </p>
+              </div>
+            </div>
+
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                if (!revName.trim() || !revComment.trim()) return;
+
+                const newRev: ClinicReview = {
+                  id: `REV-${Date.now()}`,
+                  patientName: revName.trim(),
+                  rating: revRating,
+                  careType: revCare,
+                  comment: revComment.trim(),
+                  tags: [revTag, 'Atendimento Humanizado'],
+                  date: new Date().toLocaleDateString('pt-BR'),
+                  verified: true,
+                };
+
+                if (onAddReview) {
+                  onAddReview(newRev);
+                }
+                setIsReviewModalOpen(false);
+                setRevComment('');
+              }}
+              style={{ display: 'flex', flexDirection: 'column', gap: 14 }}
+            >
+              {/* Avaliação em Estrelas */}
+              <div>
+                <label className="input-label">Sua Nota:</label>
+                <div className="star-rating-selector">
+                  {[1, 2, 3, 4, 5].map((starVal) => (
+                    <button
+                      key={starVal}
+                      type="button"
+                      className="star-interactive-btn"
+                      onClick={() => setRevRating(starVal)}
+                    >
+                      <Star
+                        size={28}
+                        fill={starVal <= revRating ? '#f59e0b' : 'none'}
+                        color={starVal <= revRating ? '#f59e0b' : '#cbd5e1'}
+                      />
+                    </button>
+                  ))}
+                  <span style={{ fontSize: '0.9rem', fontWeight: 700, marginLeft: 8, alignSelf: 'center' }}>
+                    {revRating === 5 ? '⭐ Excelente (5/5)' : revRating === 4 ? 'Muito Bom (4/5)' : `${revRating} estrelas`}
+                  </span>
+                </div>
+              </div>
+
+              <div className="form-group">
+                <label className="input-label">Seu Nome:</label>
+                <input
+                  type="text"
+                  className="form-input"
+                  value={revName}
+                  onChange={(e) => setRevName(e.target.value)}
+                  placeholder="Nome que será exibido"
+                  required
+                />
+              </div>
+
+              <div className="form-row">
+                <div className="form-group flex-1">
+                  <label className="input-label">Especialidade Realizada:</label>
+                  <select
+                    className="form-select"
+                    value={revCare}
+                    onChange={(e) => setRevCare(e.target.value as any)}
+                  >
+                    <option value="fisioterapia">Fisioterapia</option>
+                    <option value="pilates">Pilates</option>
+                  </select>
+                </div>
+                <div className="form-group flex-1">
+                  <label className="input-label">Destaque Principal:</label>
+                  <select
+                    className="form-select"
+                    value={revTag}
+                    onChange={(e) => setRevTag(e.target.value)}
+                  >
+                    <option value="Alívio Imediato da Dor">Alívio Imediato da Dor</option>
+                    <option value="Pilates em Aparelhos">Pilates em Aparelhos</option>
+                    <option value="Atendimento Humanizado">Atendimento Humanizado</option>
+                    <option value="Exercícios em Casa">Exercícios em Casa</option>
+                    <option value="Pontualidade & Estrutura">Pontualidade & Estrutura</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="form-group">
+                <label className="input-label">Seu Depoimento:</label>
+                <textarea
+                  className="form-textarea"
+                  rows={3}
+                  placeholder="Como foi o seu atendimento com a Dra. Ketllen e os resultados obtidos..."
+                  value={revComment}
+                  onChange={(e) => setRevComment(e.target.value)}
+                  required
+                />
+              </div>
+
+              <button type="submit" className="btn-confirm-alloc" style={{ marginTop: 6 }}>
+                Enviar Avaliação
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
