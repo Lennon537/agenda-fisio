@@ -40,6 +40,7 @@ export default function KetllenSouzaFisioPage() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [userLoggedIn, setUserLoggedIn] = useState<string | null>(null);
   const [userRole, setUserRole] = useState<'patient' | 'admin'>('patient');
+  const [initialAuthMode, setInitialAuthMode] = useState<'login' | 'register'>('login');
 
   // Modais
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
@@ -90,17 +91,15 @@ export default function KetllenSouzaFisioPage() {
         setIsBookingModalOpen(true);
       }
 
-      const savedAuth = localStorage.getItem('ketlen_auth_session');
-      if (paramAuth === 'true') {
-        setIsAuthenticated(true);
-        setUserLoggedIn('Mariana Duarte');
-        setUserRole('patient');
-      } else if (savedAuth) {
-        const authData = JSON.parse(savedAuth);
-        setIsAuthenticated(true);
-        setUserLoggedIn(authData.name);
-        setUserRole(authData.role);
+      const paramMode = urlParams?.get('mode');
+      if (paramMode === 'register') {
+        setInitialAuthMode('register');
       }
+
+      // O sistema SEMPRE inicia bloqueado na tela de login (sem login automático ou bypass)
+      setIsAuthenticated(false);
+      setUserLoggedIn(null);
+      localStorage.removeItem('ketlen_auth_session');
 
       const savedApts = localStorage.getItem('ketlen_appointments');
       if (savedApts) {
@@ -196,6 +195,36 @@ export default function KetllenSouzaFisioPage() {
     }
   };
 
+  // Cadastro de Novo Paciente (Garante perfil restrito de paciente)
+  const handleRegisterSuccess = (newPatient: PatientUser) => {
+    setIsAuthenticated(true);
+    setUserLoggedIn(newPatient.name);
+    setUserRole('patient');
+    setCurrentUser(newPatient);
+    setActiveTab('agendar');
+
+    localStorage.setItem(
+      'ketlen_auth_session',
+      JSON.stringify({ name: newPatient.name, role: 'patient', timestamp: Date.now() })
+    );
+    localStorage.setItem('ketlen_user', JSON.stringify(newPatient));
+
+    try {
+      const savedList = JSON.parse(localStorage.getItem('ketlen_registered_patients') || '[]');
+      const updatedList = [newPatient, ...savedList.filter((p: PatientUser) => p.email !== newPatient.email)];
+      localStorage.setItem('ketlen_registered_patients', JSON.stringify(updatedList));
+    } catch {}
+
+    showToast(`✓ Conta criada com sucesso! Bem-vindo(a), ${newPatient.name}!`);
+  };
+
+  // Trava de segurança: Garante que apenas Administradores possam acessar o Painel da Dra.
+  useEffect(() => {
+    if (userRole !== 'admin' && activeTab === 'painel-dra') {
+      setActiveTab('agendar');
+    }
+  }, [userRole, activeTab]);
+
   const handleLogout = () => {
     setIsAuthenticated(false);
     setUserLoggedIn(null);
@@ -267,8 +296,10 @@ export default function KetllenSouzaFisioPage() {
         )}
         <InitialLoginView
           theme={theme}
+          initialMode={initialAuthMode}
           onToggleTheme={handleToggleTheme}
           onLoginSuccess={handleLoginSuccess}
+          onRegisterSuccess={handleRegisterSuccess}
           onContinueAsGuest={handleContinueAsGuest}
           onShowToast={showToast}
         />
@@ -296,6 +327,7 @@ export default function KetllenSouzaFisioPage() {
         }}
         appointmentsCount={appointments.length}
         userLoggedIn={userLoggedIn}
+        userRole={userRole}
       />
 
       {/* Área Principal de Conteúdo */}
@@ -336,11 +368,11 @@ export default function KetllenSouzaFisioPage() {
               currentUser={currentUser}
               onSaveProfile={handleSaveProfile}
               onShowToast={showToast}
-              onGoToDraDashboard={() => setActiveTab('painel-dra')}
+              onGoToDraDashboard={userRole === 'admin' ? () => setActiveTab('painel-dra') : undefined}
             />
           )}
 
-          {activeTab === 'painel-dra' && (
+          {activeTab === 'painel-dra' && userRole === 'admin' && (
             <DraDashboardView
               appointments={appointments}
               encaixes={encaixes}
@@ -380,6 +412,7 @@ export default function KetllenSouzaFisioPage() {
         }}
         onOpenLogin={() => setIsLoginModalOpen(true)}
         userLoggedIn={userLoggedIn}
+        userRole={userRole}
       />
 
       {/* Modal Secundário de Alternar Conta */}

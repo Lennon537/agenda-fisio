@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import {
   Leaf,
@@ -15,33 +15,55 @@ import {
   Laptop,
   CheckCircle2,
   Calendar,
-  Sparkles
+  Sparkles,
+  User,
+  Phone,
+  UserPlus
 } from 'lucide-react';
 import { CLINIC_INFO } from '@/data/clinicData';
-import { AdminType } from '@/types';
+import { AdminType, PatientUser } from '@/types';
 
 interface InitialLoginViewProps {
   theme: 'light' | 'dark';
+  initialMode?: 'login' | 'register';
   onToggleTheme: () => void;
   onLoginSuccess: (userName: string, role: 'patient' | 'admin', adminType?: AdminType) => void;
+  onRegisterSuccess?: (newPatient: PatientUser) => void;
   onContinueAsGuest: () => void;
   onShowToast: (msg: string) => void;
 }
 
 export const InitialLoginView: React.FC<InitialLoginViewProps> = ({
   theme,
+  initialMode = 'login',
   onToggleTheme,
   onLoginSuccess,
+  onRegisterSuccess,
   onContinueAsGuest,
   onShowToast,
 }) => {
   const [role, setRole] = useState<'patient' | 'admin'>('patient');
+  const [authMode, setAuthMode] = useState<'login' | 'register'>(initialMode);
 
-  // Estado do Paciente
+  useEffect(() => {
+    if (initialMode) {
+      setAuthMode(initialMode);
+    }
+  }, [initialMode]);
+
+  // Estado do Paciente (Login)
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(true);
+
+  // Estado de Cadastro de Novo Paciente
+  const [regName, setRegName] = useState('');
+  const [regPhone, setRegPhone] = useState('');
+  const [regEmail, setRegEmail] = useState('');
+  const [regPassword, setRegPassword] = useState('');
+  const [regConfirmPassword, setRegConfirmPassword] = useState('');
+  const [showRegPassword, setShowRegPassword] = useState(false);
 
   // Estado dos 2 Administradores
   const [selectedAdmin, setSelectedAdmin] = useState<AdminType>('dra');
@@ -59,7 +81,7 @@ export const InitialLoginView: React.FC<InitialLoginViewProps> = ({
     }
   };
 
-  // Submit de Paciente (com auto-detecção para administradores se informado)
+  // Submit de Paciente (Estritamente para pacientes com senha obrigatória)
   const handlePatientSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -68,32 +90,91 @@ export const InitialLoginView: React.FC<InitialLoginViewProps> = ({
       return;
     }
 
-    const lower = email.toLowerCase().trim();
-    if (lower.includes('dra') || lower.includes('ketllen')) {
-      onLoginSuccess('Dra. Ketllen Souza', 'admin', 'dra');
-      onShowToast('✓ Bem-vinda ao Painel Clínico, Dra. Ketllen!');
-      return;
-    }
-    if (lower.includes('admin') || lower.includes('webmaster') || lower.includes('lennon')) {
-      onLoginSuccess('Lennon (Webmaster)', 'admin', 'webmaster');
-      onShowToast('✓ Acesso de Webmaster concedido. Painel administrativo ativo!');
+    if (!password.trim() || password.length < 4) {
+      onShowToast('Por favor, informe sua senha (mínimo 4 caracteres).');
       return;
     }
 
-    const displayName = email.includes('@')
-      ? email.split('@')[0]
-      : 'Mariana Duarte';
+    let patientName = email.includes('@') ? email.split('@')[0] : 'Paciente';
+    try {
+      const savedList = JSON.parse(localStorage.getItem('ketlen_registered_patients') || '[]');
+      const found = savedList.find((p: any) => p.email.toLowerCase() === email.toLowerCase().trim());
+      if (found) {
+        patientName = found.name;
+      }
+    } catch {}
 
-    onLoginSuccess(displayName, 'patient');
-    onShowToast(`✓ Bem-vindo(a) ao seu espaço, ${displayName}!`);
+    onLoginSuccess(patientName, 'patient');
+    onShowToast(`✓ Bem-vindo(a) ao seu espaço, ${patientName}!`);
   };
 
-  // Submit de Administrador
+  // Formatar Telefone/WhatsApp com máscara brasileira
+  const formatPhoneMask = (val: string) => {
+    const digits = val.replace(/\D/g, '').slice(0, 11);
+    if (digits.length <= 2) return digits.length > 0 ? `(${digits}` : '';
+    if (digits.length <= 6) return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
+    if (digits.length <= 10) {
+      return `(${digits.slice(0, 2)}) ${digits.slice(2, 6)}-${digits.slice(6)}`;
+    }
+    return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7, 11)}`;
+  };
+
+  // Submit de Cadastro de Novo Paciente
+  const handleRegisterSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!regName.trim() || regName.trim().length < 3) {
+      onShowToast('Por favor, informe seu nome completo (mínimo 3 letras).');
+      return;
+    }
+
+    const cleanPhone = regPhone.replace(/\D/g, '');
+    if (cleanPhone.length < 10) {
+      onShowToast('Por favor, informe um WhatsApp válido com DDD.');
+      return;
+    }
+
+    if (!regEmail.trim() || !regEmail.includes('@') || !regEmail.includes('.')) {
+      onShowToast('Por favor, informe um e-mail válido.');
+      return;
+    }
+
+    if (regPassword.length < 4) {
+      onShowToast('A senha deve conter no mínimo 4 caracteres.');
+      return;
+    }
+
+    if (regPassword !== regConfirmPassword) {
+      onShowToast('As senhas digitadas não coincidem. Verifique e tente novamente.');
+      return;
+    }
+
+    const newPatient: PatientUser = {
+      name: regName.trim(),
+      phone: regPhone.trim(),
+      email: regEmail.trim(),
+      notes: 'Cadastro recente pelo portal do paciente',
+      isFirstTime: true,
+    };
+
+    if (onRegisterSuccess) {
+      onRegisterSuccess(newPatient);
+    } else {
+      onLoginSuccess(newPatient.name, 'patient');
+    }
+  };
+
+  // Submit de Administrador com verificação estrita de senha
   const handleAdminSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!adminPassword.trim()) {
       onShowToast('Por favor, informe a senha de administrador.');
+      return;
+    }
+
+    if (adminPassword.trim() !== 'admin2026') {
+      onShowToast('❌ Senha de administrador incorreta. Acesso não autorizado.');
       return;
     }
 
@@ -104,32 +185,6 @@ export const InitialLoginView: React.FC<InitialLoginViewProps> = ({
       onLoginSuccess('Lennon (Webmaster)', 'admin', 'webmaster');
       onShowToast('✓ Acesso de Webmaster concedido. Painel administrativo ativo!');
     }
-  };
-
-  // Demonstração Rápida: Paciente
-  const handleQuickPatient = () => {
-    setRole('patient');
-    setEmail('mariana.duarte@email.com');
-    setPassword('123456');
-    onShowToast('✓ Credenciais da paciente Mariana preenchidas!');
-  };
-
-  // Demonstração Rápida: Dra. Ketllen
-  const handleQuickDra = () => {
-    setRole('admin');
-    setSelectedAdmin('dra');
-    setAdminEmail('dra.ketllen@ketllensouza.com.br');
-    setAdminPassword('admin2026');
-    onShowToast('✓ Credenciais da Dra. Ketllen preenchidas!');
-  };
-
-  // Demonstração Rápida: Lennon Webmaster
-  const handleQuickWebmaster = () => {
-    setRole('admin');
-    setSelectedAdmin('webmaster');
-    setAdminEmail('admin@ketllensouza.com.br');
-    setAdminPassword('admin2026');
-    onShowToast('✓ Credenciais de Webmaster (Lennon) preenchidas!');
   };
 
   return (
@@ -219,7 +274,10 @@ export const InitialLoginView: React.FC<InitialLoginViewProps> = ({
           {/* ==========================================================
               FLUXO 1: ESPAÇO DO PACIENTE (100% FIEL À IMAGEM)
               ========================================================== */}
-          {role === 'patient' && (
+          {/* ==========================================================
+              FLUXO 1A: LOGIN DE PACIENTE (100% FIEL À IMAGEM)
+              ========================================================== */}
+          {role === 'patient' && authMode === 'login' && (
             <div className="lovable-form-box fade-in-quick">
               <div className="lovable-header-text">
                 <span className="lovable-kicker-tag">BEM-VINDO AO SEU ESPAÇO DE CUIDADO</span>
@@ -305,9 +363,123 @@ export const InitialLoginView: React.FC<InitialLoginViewProps> = ({
                   <button
                     type="button"
                     className="lovable-signup-link"
-                    onClick={onContinueAsGuest}
+                    onClick={() => setAuthMode('register')}
                   >
                     Cadastre-se <ArrowRight size={14} style={{ display: 'inline', verticalAlign: 'middle', marginLeft: 4 }} />
+                  </button>
+                </div>
+              </form>
+            </div>
+          )}
+
+          {/* ==========================================================
+              FLUXO 1B: CADASTRO DE NOVO PACIENTE (NOVO USUÁRIO)
+              ========================================================== */}
+          {role === 'patient' && authMode === 'register' && (
+            <div className="lovable-form-box fade-in-quick">
+              <div className="lovable-header-text">
+                <span className="lovable-kicker-tag">NOVO PACIENTE • CADASTRO</span>
+                <h3 className="lovable-main-title">Criar minha conta.</h3>
+                <p className="lovable-main-sub">Cadastre-se para agendar consultas e acompanhar seus agendamentos e histórico.</p>
+              </div>
+
+              <form onSubmit={handleRegisterSubmit} className="lovable-form-body register-form-body">
+                {/* Campo Nome Completo */}
+                <div className="lovable-field-group">
+                  <label className="lovable-field-label">Nome Completo *</label>
+                  <div className="lovable-input-wrapper">
+                    <User size={18} className="lovable-input-icon" />
+                    <input
+                      type="text"
+                      className="lovable-input"
+                      placeholder="Ex: Mariana Duarte"
+                      value={regName}
+                      onChange={(e) => setRegName(e.target.value)}
+                      required
+                    />
+                  </div>
+                </div>
+
+                {/* Campo WhatsApp */}
+                <div className="lovable-field-group">
+                  <label className="lovable-field-label">WhatsApp para Confirmação *</label>
+                  <div className="lovable-input-wrapper">
+                    <Phone size={18} className="lovable-input-icon" />
+                    <input
+                      type="tel"
+                      className="lovable-input"
+                      placeholder="(69) 99248-0599"
+                      value={regPhone}
+                      onChange={(e) => setRegPhone(formatPhoneMask(e.target.value))}
+                      required
+                    />
+                  </div>
+                </div>
+
+                {/* Campo E-mail */}
+                <div className="lovable-field-group">
+                  <label className="lovable-field-label">E-mail *</label>
+                  <div className="lovable-input-wrapper">
+                    <Mail size={18} className="lovable-input-icon" />
+                    <input
+                      type="email"
+                      className="lovable-input"
+                      placeholder="seu@email.com"
+                      value={regEmail}
+                      onChange={(e) => setRegEmail(e.target.value)}
+                      required
+                    />
+                  </div>
+                </div>
+
+                {/* Linha Dupla de Senhas */}
+                <div className="lovable-dual-fields-row">
+                  <div className="lovable-field-group" style={{ flex: 1 }}>
+                    <label className="lovable-field-label">Criar Senha *</label>
+                    <div className="lovable-input-wrapper">
+                      <Lock size={16} className="lovable-input-icon" />
+                      <input
+                        type={showRegPassword ? 'text' : 'password'}
+                        className="lovable-input"
+                        placeholder="Mín. 4 dígitos"
+                        value={regPassword}
+                        onChange={(e) => setRegPassword(e.target.value)}
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div className="lovable-field-group" style={{ flex: 1 }}>
+                    <label className="lovable-field-label">Confirmar Senha *</label>
+                    <div className="lovable-input-wrapper">
+                      <Lock size={16} className="lovable-input-icon" />
+                      <input
+                        type={showRegPassword ? 'text' : 'password'}
+                        className="lovable-input"
+                        placeholder="Repetir senha"
+                        value={regConfirmPassword}
+                        onChange={(e) => setRegConfirmPassword(e.target.value)}
+                        required
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Botão Cadastrar */}
+                <button type="submit" className="lovable-submit-btn">
+                  <span>Criar minha conta e entrar</span>
+                  <ArrowRight size={18} className="lovable-submit-arrow" />
+                </button>
+
+                {/* Link Voltar para Login */}
+                <div className="lovable-signup-row">
+                  <span className="lovable-signup-text">Já possui uma conta cadastrada?</span>
+                  <button
+                    type="button"
+                    className="lovable-signup-link"
+                    onClick={() => setAuthMode('login')}
+                  >
+                    Fazer Login <ArrowRight size={14} style={{ display: 'inline', verticalAlign: 'middle', marginLeft: 4 }} />
                   </button>
                 </div>
               </form>
@@ -414,24 +586,6 @@ export const InitialLoginView: React.FC<InitialLoginViewProps> = ({
                   </span>
                   <ArrowRight size={18} className="lovable-submit-arrow" />
                 </button>
-
-                {/* Atalhos Rápidos para Teste */}
-                <div className="lovable-quick-test-bar">
-                  <button
-                    type="button"
-                    className="lovable-quick-demo-pill"
-                    onClick={handleQuickDra}
-                  >
-                    🩺 Dra. Ketllen (1 clique)
-                  </button>
-                  <button
-                    type="button"
-                    className="lovable-quick-demo-pill"
-                    onClick={handleQuickWebmaster}
-                  >
-                    💻 Lennon Webmaster (1 clique)
-                  </button>
-                </div>
               </form>
             </div>
           )}
@@ -442,15 +596,7 @@ export const InitialLoginView: React.FC<InitialLoginViewProps> = ({
         <footer className="lovable-form-footer">
           <span className="lovable-footer-copy">© 2026 Ketllen Souza Fisioterapia</span>
           <span className="lovable-footer-motto">
-            Feito para cuidar de você{' '}
-            <button
-              type="button"
-              className="lovable-footer-leaf-btn"
-              onClick={() => setRole(role === 'patient' ? 'admin' : 'patient')}
-              title="Acesso discreto ao Painel de Administrador"
-            >
-              <Leaf size={12} className="lovable-footer-leaf" />
-            </button>
+            Feito para cuidar de você <Leaf size={12} className="lovable-footer-leaf" style={{ display: 'inline', verticalAlign: 'middle', marginLeft: 4 }} />
           </span>
         </footer>
       </div>

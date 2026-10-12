@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Calendar, ClipboardList, User } from 'lucide-react';
+import { Calendar, ClipboardList, User, Leaf } from 'lucide-react';
 import { ActiveNavTab } from '@/types';
 
 interface MobileNavProps {
@@ -9,6 +9,7 @@ interface MobileNavProps {
   onSelectTab: (tab: ActiveNavTab) => void;
   onOpenLogin: () => void;
   userLoggedIn?: string | null;
+  userRole?: 'patient' | 'admin';
 }
 
 export const MobileNav: React.FC<MobileNavProps> = ({
@@ -16,6 +17,7 @@ export const MobileNav: React.FC<MobileNavProps> = ({
   onSelectTab,
   onOpenLogin,
   userLoggedIn,
+  userRole = 'patient',
 }) => {
   return (
     <nav className="mobile-bottom-nav">
@@ -56,6 +58,19 @@ export const MobileNav: React.FC<MobileNavProps> = ({
         <User size={20} className="nav-icon-svg" />
         <span className="nav-label-text">Meu perfil</span>
       </button>
+
+      {/* 4. Painel Administrativo (Exclusivo para os 2 Administradores) */}
+      {userRole === 'admin' && (
+        <button
+          type="button"
+          className={`mobile-nav-btn ${activeTab === 'painel-dra' ? 'active' : ''}`}
+          onClick={() => onSelectTab('painel-dra')}
+          aria-label="Painel Administrativo"
+        >
+          <Leaf size={20} className="nav-icon-svg text-green" />
+          <span className="nav-label-text">Painel Dra</span>
+        </button>
+      )}
     </nav>
   );
 };

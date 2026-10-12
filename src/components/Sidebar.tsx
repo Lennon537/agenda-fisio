@@ -10,6 +10,7 @@ interface SidebarProps {
   onSelectTab: (tab: ActiveNavTab) => void;
   appointmentsCount?: number;
   userLoggedIn?: string | null;
+  userRole?: 'patient' | 'admin';
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
@@ -17,6 +18,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onSelectTab,
   appointmentsCount = 0,
   userLoggedIn,
+  userRole = 'patient',
 }) => {
   return (
     <aside className="app-sidebar">
@@ -67,24 +69,29 @@ export const Sidebar: React.FC<SidebarProps> = ({
           </button>
         </nav>
 
-        <span className="sidebar-section-label" style={{ marginTop: 24 }}>GESTÃO & CLÍNICA</span>
-        <nav className="sidebar-nav">
-          <button
-            type="button"
-            className={`nav-item-btn dra-nav-btn ${activeTab === 'painel-dra' ? 'active' : ''}`}
-            onClick={() => onSelectTab('painel-dra')}
-          >
-            <Leaf size={18} className="nav-item-icon text-green" />
-            <span className="nav-item-label">
-              {userLoggedIn?.toLowerCase().includes('webmaster')
-                ? 'Painel do Webmaster'
-                : 'Painel da Dra. Ketllen'}
-            </span>
-            <span className="nav-badge-dra">
-              {userLoggedIn?.toLowerCase().includes('webmaster') ? 'Admin' : 'Dra'}
-            </span>
-          </button>
-        </nav>
+        {/* Gestão & Clínica (Apenas visível para os 2 Administradores: Dra. Ketllen e Lennon) */}
+        {userRole === 'admin' && (
+          <>
+            <span className="sidebar-section-label" style={{ marginTop: 24 }}>GESTÃO & CLÍNICA</span>
+            <nav className="sidebar-nav">
+              <button
+                type="button"
+                className={`nav-item-btn dra-nav-btn ${activeTab === 'painel-dra' ? 'active' : ''}`}
+                onClick={() => onSelectTab('painel-dra')}
+              >
+                <Leaf size={18} className="nav-item-icon text-green" />
+                <span className="nav-item-label">
+                  {userLoggedIn?.toLowerCase().includes('webmaster')
+                    ? 'Painel do Webmaster'
+                    : 'Painel da Dra. Ketllen'}
+                </span>
+                <span className="nav-badge-dra">
+                  {userLoggedIn?.toLowerCase().includes('webmaster') ? 'Admin' : 'Dra'}
+                </span>
+              </button>
+            </nav>
+          </>
+        )}
       </div>
 
 

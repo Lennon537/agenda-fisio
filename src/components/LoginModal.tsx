@@ -54,6 +54,10 @@ export const LoginModal: React.FC<LoginModalProps> = ({
         onShowToast('Por favor, informe a senha de administrador.');
         return;
       }
+      if (adminPassword.trim() !== 'admin2026') {
+        onShowToast('❌ Senha de administrador incorreta. Acesso não autorizado.');
+        return;
+      }
       if (selectedAdmin === 'dra') {
         onLoginSuccess('Dra. Ketllen Souza', 'admin', 'dra');
         onShowToast('✓ Bem-vinda ao painel profissional, Dra. Ketllen!');
@@ -76,27 +80,6 @@ export const LoginModal: React.FC<LoginModalProps> = ({
     }
 
     onClose();
-  };
-
-  const handleQuickPatientDemo = () => {
-    setRole('patient');
-    setPatientInput('(11) 98765-4321');
-    setPatientName('Mariana Duarte');
-    onShowToast('✓ Dados de paciente preenchidos para demonstração!');
-  };
-
-  const handleQuickDraDemo = () => {
-    setRole('admin');
-    setSelectedAdmin('dra');
-    setAdminPassword('admin2026');
-    onShowToast('✓ Dados da Dra. Ketllen preenchidos para demonstração!');
-  };
-
-  const handleQuickWebmasterDemo = () => {
-    setRole('admin');
-    setSelectedAdmin('webmaster');
-    setAdminPassword('admin2026');
-    onShowToast('✓ Dados do Webmaster (Lennon) preenchidos para demonstração!');
   };
 
   return (
@@ -238,20 +221,13 @@ export const LoginModal: React.FC<LoginModalProps> = ({
               <div className="login-form-group">
                 <div className="password-header-row">
                   <label className="login-label">Senha do Administrador</label>
-                  <button
-                    type="button"
-                    className="forgot-password-link"
-                    onClick={() => onShowToast('Dica de demonstração: use a senha admin2026')}
-                  >
-                    Esqueceu?
-                  </button>
                 </div>
                 <div className="login-input-wrapper">
                   <KeyRound size={17} className="login-input-icon" />
                   <input
                     type={showPassword ? 'text' : 'password'}
                     className="login-input"
-                    placeholder="Senha do administrador (admin2026)"
+                    placeholder="Digite a senha de administrador"
                     value={adminPassword}
                     onChange={(e) => setAdminPassword(e.target.value)}
                     required
@@ -281,34 +257,6 @@ export const LoginModal: React.FC<LoginModalProps> = ({
             <ArrowRight size={16} />
           </button>
         </form>
-
-        {/* Atalhos Rápidos para Demonstração */}
-        <div className="login-demo-helpers" style={{ marginTop: 18 }}>
-          <span className="demo-helpers-title">Preenchimento rápido de teste:</span>
-          <div className="demo-buttons-row">
-            <button
-              type="button"
-              className="btn-demo-pill"
-              onClick={handleQuickPatientDemo}
-            >
-              👤 Paciente Mariana
-            </button>
-            <button
-              type="button"
-              className="btn-demo-pill"
-              onClick={handleQuickDraDemo}
-            >
-              🩺 Dra. Ketllen
-            </button>
-            <button
-              type="button"
-              className="btn-demo-pill"
-              onClick={handleQuickWebmasterDemo}
-            >
-              💻 Lennon Webmaster
-            </button>
-          </div>
-        </div>
 
         {/* Rodapé Acolhedor */}
         <div className="login-modal-footer">

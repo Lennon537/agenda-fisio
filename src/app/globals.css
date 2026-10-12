@@ -4437,6 +4437,16 @@ body {
   width: 100%;
 }
 
+.lovable-form-body.register-form-body {
+  gap: 12px;
+}
+
+.lovable-dual-fields-row {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+}
+
 .lovable-field-group {
   display: flex;
   flex-direction: column;
@@ -5035,6 +5045,16 @@ body {
     display: flex !important;
     flex-direction: column !important;
     gap: clamp(10px, 1.6vh, 14px) !important;
+    width: 100% !important;
+  }
+
+  .lovable-form-body.register-form-body {
+    gap: clamp(7px, 1.1vh, 10px) !important;
+  }
+
+  .lovable-dual-fields-row {
+    display: flex !important;
+    gap: 8px !important;
     width: 100% !important;
   }
 
