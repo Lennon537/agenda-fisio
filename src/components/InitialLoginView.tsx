@@ -81,12 +81,12 @@ export const InitialLoginView: React.FC<InitialLoginViewProps> = ({
     }
   };
 
-  // Submit de Paciente (Estritamente para pacientes com senha obrigatória)
+  // Submit Principal de Autenticação (reconhece Administrador e Pacientes)
   const handlePatientSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!email.trim()) {
-      onShowToast('Por favor, informe seu e-mail.');
+      onShowToast('Por favor, informe seu e-mail ou usuário.');
       return;
     }
 
@@ -95,10 +95,55 @@ export const InitialLoginView: React.FC<InitialLoginViewProps> = ({
       return;
     }
 
+    const lower = email.toLowerCase().trim();
+
+    // 1. CONTA DE ADMINISTRADOR (Acesso Total: Lennon Webmaster ou Dra. Ketllen)
+    if (
+      lower === 'admin@ketllensouza.com.br' ||
+      lower === 'admin' ||
+      lower === 'lennon' ||
+      lower === 'lennon@ketllensouza.com.br' ||
+      lower === 'dra.ketllen@ketllensouza.com.br' ||
+      lower === 'dra'
+    ) {
+      if (password.trim() === 'admin2026') {
+        const isLennon = lower.includes('admin') || lower.includes('lennon');
+        if (isLennon) {
+          onLoginSuccess('Lennon (Webmaster)', 'admin', 'webmaster');
+          onShowToast('✓ Acesso de Administrador Geral liberado. Bem-vindo, Lennon!');
+        } else {
+          onLoginSuccess('Dra. Ketllen Souza', 'admin', 'dra');
+          onShowToast('✓ Acesso de Administradora liberado. Bem-vinda, Dra. Ketllen!');
+        }
+        return;
+      } else {
+        onShowToast('❌ Senha de administrador incorreta. (Dica de acesso: admin2026)');
+        return;
+      }
+    }
+
+    // 2. CONTA FICTÍCIA DE PACIENTE (Para conferir o Painel de Paciente)
+    if (
+      lower === 'paciente@teste.com' ||
+      lower === 'paciente' ||
+      lower === 'mariana.duarte@email.com' ||
+      lower === 'mariana'
+    ) {
+      if (password.trim() === '1234' || password.trim() === 'paciente123' || password.trim() === '123456') {
+        onLoginSuccess('Mariana Duarte', 'patient');
+        onShowToast('✓ Bem-vinda ao Espaço do Paciente, Mariana Duarte!');
+        return;
+      } else {
+        onShowToast('❌ Senha incorreta para o paciente de teste. (Use a senha: 1234)');
+        return;
+      }
+    }
+
+    // 3. PACIENTES CADASTRADOS VIA TELA DE CADASTRO
     let patientName = email.includes('@') ? email.split('@')[0] : 'Paciente';
     try {
       const savedList = JSON.parse(localStorage.getItem('ketlen_registered_patients') || '[]');
-      const found = savedList.find((p: any) => p.email.toLowerCase() === email.toLowerCase().trim());
+      const found = savedList.find((p: any) => p.email.toLowerCase() === lower);
       if (found) {
         patientName = found.name;
       }
