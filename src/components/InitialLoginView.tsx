@@ -160,12 +160,12 @@ export const InitialLoginView: React.FC<InitialLoginViewProps> = ({
             Mais qualidade<br />
             de vida.
           </h2>
-          <p className="lovable-hero-sub">
+          <p className="lovable-hero-sub lovable-desktop-only">
             Um cuidado próximo, no seu ritmo.<br />
             Estamos aqui para caminhar com você.
           </p>
 
-          <div className="lovable-hero-footer-divider">
+          <div className="lovable-hero-footer-divider lovable-desktop-only">
             <div className="lovable-hero-quote-row">
               <Heart size={16} className="lovable-heart-svg" />
               <span>Seu movimento, nosso cuidado.</span>
@@ -463,7 +463,10 @@ export const InitialLoginView: React.FC<InitialLoginViewProps> = ({
         {/* Rodapé da Coluna Direita */}
         <footer className="lovable-form-footer">
           <span className="lovable-footer-copy">© 2026 Ketllen Souza Fisioterapia</span>
-          <span className="lovable-footer-motto">Cuidado em cada movimento</span>
+          <span className="lovable-footer-bullet">•</span>
+          <span className="lovable-footer-motto">
+            Feito para cuidar de você <Leaf size={12} className="lovable-footer-leaf" />
+          </span>
         </footer>
       </div>
     </div>

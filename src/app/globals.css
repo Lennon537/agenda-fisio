@@ -3709,13 +3709,181 @@ body {
 
 @media (max-width: 1024px) {
   .lovable-login-root {
-    grid-template-columns: 1fr;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    min-height: 100dvh;
+    background: #07120e;
   }
+
+  /* BANNER SUPERIOR COM FOTO DO REFORMER NO MOBILE */
   .lovable-hero-col {
+    display: flex !important;
+    position: relative;
+    min-height: unset;
+    height: 255px;
+    padding: 22px 20px 18px !important;
+    justify-content: space-between;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+
+  .lovable-hero-overlay {
+    background: linear-gradient(
+      180deg,
+      rgba(7, 18, 14, 0.45) 0%,
+      rgba(7, 18, 14, 0.15) 25%,
+      rgba(7, 18, 14, 0.5) 55%,
+      rgba(7, 18, 14, 0.92) 84%,
+      #07120e 100%
+    );
+  }
+
+  .lovable-brand-logo-circle {
+    width: 38px;
+    height: 38px;
+  }
+
+  .lovable-brand-name {
+    font-size: 0.95rem;
+    line-height: 1.15;
+  }
+
+  .lovable-brand-sub {
+    font-size: 0.58rem;
+    letter-spacing: 0.14em;
+  }
+
+  .lovable-hero-kicker {
+    font-size: 0.62rem;
+    letter-spacing: 0.12em;
+    margin-bottom: 6px;
+  }
+
+  .lovable-hero-title {
+    font-size: 1.85rem;
+    line-height: 1.14;
+    margin-bottom: 0;
+    letter-spacing: -0.02em;
+  }
+
+  .lovable-desktop-only {
     display: none !important;
   }
+
+  /* FORMULÁRIO COMPACTO LOGO ABAIXO DO BANNER NO MOBILE */
   .lovable-form-col {
-    padding: 24px 20px !important;
+    padding: 16px 20px 32px !important;
+    min-height: unset;
+    background: #07120e;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+  }
+
+  .lovable-form-topbar {
+    margin-bottom: 18px;
+  }
+
+  .lovable-role-tab {
+    font-size: 0.68rem;
+    letter-spacing: 0.12em;
+    color: #94a3b8;
+  }
+
+  .lovable-secure-badge {
+    font-size: 0.72rem;
+    color: #94a3b8;
+  }
+
+  .lovable-leaf-badge {
+    width: 44px;
+    height: 44px;
+    margin-bottom: 18px;
+  }
+
+  .lovable-header-text {
+    margin-bottom: 22px;
+  }
+
+  .lovable-kicker-tag {
+    font-size: 0.64rem;
+    letter-spacing: 0.14em;
+    margin-bottom: 6px;
+  }
+
+  .lovable-main-title {
+    font-size: 1.75rem;
+    line-height: 1.2;
+    margin-bottom: 6px;
+  }
+
+  .lovable-main-sub {
+    font-size: 0.82rem;
+  }
+
+  .lovable-form-body {
+    gap: 15px;
+  }
+
+  .lovable-field-label {
+    font-size: 0.78rem;
+  }
+
+  .lovable-input-wrapper {
+    padding: 11px 14px;
+    border-radius: 8px;
+  }
+
+  .lovable-input {
+    font-size: 0.86rem;
+  }
+
+  .lovable-options-row {
+    margin-top: 2px;
+    font-size: 0.78rem;
+  }
+
+  .lovable-checkbox-text {
+    font-size: 0.78rem;
+  }
+
+  .lovable-forgot-link {
+    font-size: 0.78rem;
+  }
+
+  .lovable-submit-btn {
+    padding: 13px 18px;
+    font-size: 0.9rem;
+    border-radius: 8px;
+    margin-top: 6px;
+  }
+
+  .lovable-signup-row {
+    font-size: 0.8rem;
+    margin-top: 10px;
+  }
+
+  .lovable-signup-link {
+    font-size: 0.8rem;
+  }
+
+  .lovable-quote-pill {
+    display: none !important;
+  }
+
+  .lovable-form-footer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding-top: 26px;
+    font-size: 0.68rem;
+    color: #475569;
+    border-top: none;
+    text-align: center;
+    margin-top: auto;
   }
 }
 
@@ -4343,8 +4511,22 @@ body {
   color: #475569;
 }
 
-.lovable-footer-motto {
+.lovable-footer-bullet {
   color: #334155;
+  margin: 0 4px;
+}
+
+.lovable-footer-motto {
+  color: #475569;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.lovable-footer-leaf {
+  color: #34d399;
+  display: inline-block;
+  vertical-align: middle;
 }
 
 .fade-in-quick {
