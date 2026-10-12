@@ -5,21 +5,25 @@ import {
   X,
   User,
   Phone,
+  Mail,
   Lock,
   Eye,
   EyeOff,
   ArrowRight,
   ShieldCheck,
   Leaf,
-  MessageCircle,
-  Sparkles
+  Stethoscope,
+  Laptop,
+  CheckCircle2,
+  KeyRound
 } from 'lucide-react';
 import { CLINIC_INFO } from '@/data/clinicData';
+import { AdminType } from '@/types';
 
 interface LoginModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onLoginSuccess: (userName: string, role: 'patient' | 'admin') => void;
+  onLoginSuccess: (userName: string, role: 'patient' | 'admin', adminType?: AdminType) => void;
   onShowToast: (msg: string) => void;
 }
 
@@ -30,29 +34,42 @@ export const LoginModal: React.FC<LoginModalProps> = ({
   onShowToast,
 }) => {
   const [role, setRole] = useState<'patient' | 'admin'>('patient');
-  const [identifier, setIdentifier] = useState('');
-  const [password, setPassword] = useState('');
+
+  // Paciente
+  const [patientInput, setPatientInput] = useState('');
+  const [patientName, setPatientName] = useState('');
+
+  // Admin
+  const [selectedAdmin, setSelectedAdmin] = useState<AdminType>('dra');
+  const [adminPassword, setAdminPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [rememberMe, setRememberMe] = useState(true);
 
   if (!isOpen) return null;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!identifier.trim()) {
-      onShowToast('Por favor, informe seu WhatsApp ou E-mail.');
-      return;
-    }
-
     if (role === 'admin') {
-      // Login de profissional/recepção
-      onLoginSuccess('Dra. Ketllen Souza (Fisioterapeuta)', 'admin');
-      onShowToast('✓ Bem-vinda ao painel profissional, Dra. Ketllen!');
+      if (!adminPassword.trim()) {
+        onShowToast('Por favor, informe a senha de administrador.');
+        return;
+      }
+      if (selectedAdmin === 'dra') {
+        onLoginSuccess('Dra. Ketllen Souza', 'admin', 'dra');
+        onShowToast('✓ Bem-vinda ao painel profissional, Dra. Ketllen!');
+      } else {
+        onLoginSuccess('Lennon (Webmaster)', 'admin', 'webmaster');
+        onShowToast('✓ Painel administrativo de Webmaster ativo!');
+      }
     } else {
-      // Login de paciente
-      const name = identifier.includes('@')
-        ? identifier.split('@')[0]
+      if (!patientInput.trim()) {
+        onShowToast('Por favor, informe seu WhatsApp ou E-mail.');
+        return;
+      }
+      const name = patientName.trim()
+        ? patientName.trim()
+        : patientInput.includes('@')
+        ? patientInput.split('@')[0]
         : 'Mariana Duarte';
       onLoginSuccess(name, 'patient');
       onShowToast(`✓ Bem-vindo(a) ao seu espaço, ${name}!`);
@@ -63,16 +80,23 @@ export const LoginModal: React.FC<LoginModalProps> = ({
 
   const handleQuickPatientDemo = () => {
     setRole('patient');
-    setIdentifier('(11) 98765-4321');
-    setPassword('123456');
+    setPatientInput('(11) 98765-4321');
+    setPatientName('Mariana Duarte');
     onShowToast('✓ Dados de paciente preenchidos para demonstração!');
   };
 
-  const handleQuickAdminDemo = () => {
+  const handleQuickDraDemo = () => {
     setRole('admin');
-    setIdentifier('contato@ketllensouza.com.br');
-    setPassword('admin2026');
-    onShowToast('✓ Dados de fisioterapeuta preenchidos para demonstração!');
+    setSelectedAdmin('dra');
+    setAdminPassword('admin2026');
+    onShowToast('✓ Dados da Dra. Ketllen preenchidos para demonstração!');
+  };
+
+  const handleQuickWebmasterDemo = () => {
+    setRole('admin');
+    setSelectedAdmin('webmaster');
+    setAdminPassword('admin2026');
+    onShowToast('✓ Dados do Webmaster (Lennon) preenchidos para demonstração!');
   };
 
   return (
@@ -93,17 +117,19 @@ export const LoginModal: React.FC<LoginModalProps> = ({
           <div className="brand-logo-circle login-logo-circle">
             <Leaf size={24} className="brand-leaf-icon" />
           </div>
-          <h2 className="login-title">Acesse seu espaço de cuidado</h2>
+          <h2 className="login-title">Acessar ou Alternar Conta</h2>
           <p className="login-subtitle">
-            Acompanhe suas sessões, histórico de tratamento e solicitações de encaixe na Ketllen Souza Fisioterapia.
+            {role === 'patient'
+              ? 'Área exclusiva para pacientes acompanharem seus agendamentos e prontuário.'
+              : 'Ambiente restrito exclusivo para os 2 administradores autorizados.'}
           </p>
         </div>
 
-        {/* Seletor de Perfil (Paciente ou Profissional) */}
-        <div className="login-role-tabs">
+        {/* Seletor de Perfil (Paciente ou Administrador) */}
+        <div className="login-segmented-tabs" style={{ marginBottom: 20 }}>
           <button
             type="button"
-            className={`role-tab-btn ${role === 'patient' ? 'active' : ''}`}
+            className={`login-segment-btn ${role === 'patient' ? 'active' : ''}`}
             onClick={() => setRole('patient')}
           >
             <User size={15} />
@@ -111,104 +137,175 @@ export const LoginModal: React.FC<LoginModalProps> = ({
           </button>
           <button
             type="button"
-            className={`role-tab-btn ${role === 'admin' ? 'active' : ''}`}
+            className={`login-segment-btn ${role === 'admin' ? 'active' : ''}`}
             onClick={() => setRole('admin')}
           >
             <ShieldCheck size={15} />
-            <span>Fisioterapeuta / Equipe</span>
+            <span>Administrador</span>
+            <span className="login-admin-counter-pill">2 contas</span>
           </button>
         </div>
 
         {/* Formulário de Login */}
         <form onSubmit={handleSubmit} className="login-form">
-          <div className="login-form-group">
-            <label className="login-label">
-              {role === 'patient' ? 'WhatsApp ou E-mail' : 'E-mail Profissional'}
-            </label>
-            <div className="login-input-wrapper">
-              {role === 'patient' ? (
-                <Phone size={17} className="login-input-icon" />
-              ) : (
-                <User size={17} className="login-input-icon" />
-              )}
-              <input
-                type="text"
-                className="login-input"
-                placeholder={role === 'patient' ? 'Ex: (11) 98765-4321 ou seu e-mail' : 'Ex: contato@ketllensouza.com.br'}
-                value={identifier}
-                onChange={(e) => setIdentifier(e.target.value)}
-                required
-              />
-            </div>
-          </div>
+          {role === 'patient' ? (
+            <>
+              <div className="login-form-group">
+                <label className="login-label">WhatsApp ou E-mail</label>
+                <div className="login-input-wrapper">
+                  <Phone size={17} className="login-input-icon" />
+                  <input
+                    type="text"
+                    className="login-input"
+                    placeholder="Ex: (11) 98765-4321 ou e-mail"
+                    value={patientInput}
+                    onChange={(e) => setPatientInput(e.target.value)}
+                    required
+                  />
+                </div>
+              </div>
 
-          <div className="login-form-group">
-            <div className="password-header-row">
-              <label className="login-label">Senha de Acesso</label>
-              <button
-                type="button"
-                className="forgot-password-link"
-                onClick={() => onShowToast('Link de recuperação enviado para seu WhatsApp!')}
-              >
-                Esqueci minha senha
-              </button>
-            </div>
-            <div className="login-input-wrapper">
-              <Lock size={17} className="login-input-icon" />
-              <input
-                type={showPassword ? 'text' : 'password'}
-                className="login-input"
-                placeholder="Sua senha secreta"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-              <button
-                type="button"
-                className="toggle-password-btn"
-                onClick={() => setShowPassword(!showPassword)}
-                tabIndex={-1}
-              >
-                {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-              </button>
-            </div>
-          </div>
+              <div className="login-form-group">
+                <label className="login-label">Nome Completo (Opcional)</label>
+                <div className="login-input-wrapper">
+                  <User size={17} className="login-input-icon" />
+                  <input
+                    type="text"
+                    className="login-input"
+                    placeholder="Ex: Mariana Duarte"
+                    value={patientName}
+                    onChange={(e) => setPatientName(e.target.value)}
+                  />
+                </div>
+              </div>
+            </>
+          ) : (
+            <>
+              {/* Alerta de 2 Administradores */}
+              <div className="admin-security-alert" style={{ marginBottom: 14 }}>
+                <div className="admin-alert-icon">
+                  <ShieldCheck size={16} color="#059669" />
+                </div>
+                <div className="admin-alert-text">
+                  <strong>Acesso Restrito: 2 Administradores</strong>
+                  <span>Apenas a Dra. Ketllen Souza e o Webmaster (Lennon).</span>
+                </div>
+              </div>
 
-          <div className="remember-row">
-            <label className="remember-checkbox-label">
-              <input
-                type="checkbox"
-                checked={rememberMe}
-                onChange={(e) => setRememberMe(e.target.checked)}
-              />
-              <span>Manter conectado neste dispositivo</span>
-            </label>
-          </div>
+              {/* Seletor Visual dos 2 Administradores */}
+              <div className="admin-selector-wrapper" style={{ marginBottom: 14 }}>
+                <div className="admin-cards-grid">
+                  <button
+                    type="button"
+                    className={`admin-card-btn ${selectedAdmin === 'dra' ? 'active' : ''}`}
+                    onClick={() => setSelectedAdmin('dra')}
+                  >
+                    <div className="admin-card-avatar dra-avatar">
+                      <Stethoscope size={16} />
+                    </div>
+                    <div className="admin-card-info">
+                      <strong className="admin-card-name">Dra. Ketllen Souza</strong>
+                      <span className="admin-card-badge">Fisioterapeuta</span>
+                    </div>
+                    {selectedAdmin === 'dra' && (
+                      <div className="admin-card-check">
+                        <CheckCircle2 size={15} />
+                      </div>
+                    )}
+                  </button>
+
+                  <button
+                    type="button"
+                    className={`admin-card-btn ${selectedAdmin === 'webmaster' ? 'active' : ''}`}
+                    onClick={() => setSelectedAdmin('webmaster')}
+                  >
+                    <div className="admin-card-avatar webmaster-avatar">
+                      <Laptop size={16} />
+                    </div>
+                    <div className="admin-card-info">
+                      <strong className="admin-card-name">Lennon</strong>
+                      <span className="admin-card-badge">Webmaster</span>
+                    </div>
+                    {selectedAdmin === 'webmaster' && (
+                      <div className="admin-card-check">
+                        <CheckCircle2 size={15} />
+                      </div>
+                    )}
+                  </button>
+                </div>
+              </div>
+
+              <div className="login-form-group">
+                <div className="password-header-row">
+                  <label className="login-label">Senha do Administrador</label>
+                  <button
+                    type="button"
+                    className="forgot-password-link"
+                    onClick={() => onShowToast('Dica de demonstração: use a senha admin2026')}
+                  >
+                    Esqueceu?
+                  </button>
+                </div>
+                <div className="login-input-wrapper">
+                  <KeyRound size={17} className="login-input-icon" />
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    className="login-input"
+                    placeholder="Senha do administrador (admin2026)"
+                    value={adminPassword}
+                    onChange={(e) => setAdminPassword(e.target.value)}
+                    required
+                  />
+                  <button
+                    type="button"
+                    className="toggle-password-btn"
+                    onClick={() => setShowPassword(!showPassword)}
+                    tabIndex={-1}
+                  >
+                    {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                  </button>
+                </div>
+              </div>
+            </>
+          )}
 
           {/* Botão de Entrar */}
-          <button type="submit" className="btn-login-submit">
-            <span>Entrar no Espaço</span>
+          <button type="submit" className="btn-login-submit" style={{ marginTop: 14 }}>
+            <span>
+              {role === 'patient'
+                ? 'Entrar no Espaço do Paciente'
+                : selectedAdmin === 'dra'
+                ? 'Entrar no Painel da Dra. Ketllen'
+                : 'Entrar como Webmaster'}
+            </span>
             <ArrowRight size={16} />
           </button>
         </form>
 
         {/* Atalhos Rápidos para Demonstração */}
-        <div className="login-demo-helpers">
-          <span className="demo-helpers-title">Preenchimento rápido para testar:</span>
+        <div className="login-demo-helpers" style={{ marginTop: 18 }}>
+          <span className="demo-helpers-title">Preenchimento rápido de teste:</span>
           <div className="demo-buttons-row">
             <button
               type="button"
               className="btn-demo-pill"
               onClick={handleQuickPatientDemo}
             >
-              👤 Paciente de Teste
+              👤 Paciente Mariana
             </button>
             <button
               type="button"
               className="btn-demo-pill"
-              onClick={handleQuickAdminDemo}
+              onClick={handleQuickDraDemo}
             >
-              🩺 Fisioterapeuta Dra. Ketllen
+              🩺 Dra. Ketllen
+            </button>
+            <button
+              type="button"
+              className="btn-demo-pill"
+              onClick={handleQuickWebmasterDemo}
+            >
+              💻 Lennon Webmaster
             </button>
           </div>
         </div>

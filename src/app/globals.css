@@ -3379,4 +3379,317 @@ body {
   margin-left: auto;
 }
 
+/* ==========================================================================
+   NOVA TELA DE LOGIN MODERNA & DIFERENCIAÇÃO DE ADMINISTRADORES
+   ========================================================================== */
+
+/* BOTÃO DE VISITA NA TOPBAR */
+.btn-guest-topbar-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 14px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-color);
+  background: var(--bg-surface);
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.btn-guest-topbar-link:hover {
+  background: var(--bg-subtle);
+  color: var(--green-primary);
+  border-color: var(--green-primary);
+}
+
+@media (max-width: 640px) {
+  .desktop-only-text {
+    display: none;
+  }
+}
+
+/* CARDS GLASSMORPHISM DA TELA DE LOGIN */
+.login-glass-card {
+  position: relative;
+  background: var(--bg-card);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-xl);
+  box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.08), 0 0 1px 1px rgba(255, 255, 255, 0.05);
+}
+
+/* TABS SEGMENTADAS */
+.login-segmented-tabs {
+  display: grid;
+  grid-template-columns: 1fr 1.15fr;
+  gap: 6px;
+  background: var(--bg-subtle);
+  padding: 5px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+  margin: 18px 0 20px;
+}
+
+.login-segment-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  position: relative;
+}
+
+.login-segment-btn:hover {
+  color: var(--text-title);
+}
+
+.login-segment-btn.active {
+  background: var(--bg-card);
+  color: var(--green-primary);
+  font-weight: 700;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.admin-segment-tab.active {
+  color: #047857;
+}
+
+.login-admin-counter-pill {
+  font-size: 0.65rem;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: rgba(16, 185, 129, 0.15);
+  color: #059669;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+/* CHIPS DO MODO PACIENTE: WHATSAPP OU EMAIL */
+.patient-mode-chips-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.patient-mode-label {
+  font-size: 0.76rem;
+  color: var(--text-subtle);
+  font-weight: 600;
+}
+
+.patient-mode-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 11px;
+  border-radius: 999px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-surface);
+  color: var(--text-muted);
+  font-size: 0.74rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.patient-mode-chip:hover {
+  border-color: var(--green-primary);
+}
+
+.patient-mode-chip.active {
+  background: var(--bg-green-soft);
+  border-color: var(--green-primary);
+  color: var(--green-primary);
+  font-weight: 700;
+}
+
+/* ALERTA DE SEGURANÇA ADMINISTRADOR */
+.admin-security-alert {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  background: rgba(16, 185, 129, 0.08);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  margin-bottom: 18px;
+}
+
+.admin-alert-icon {
+  margin-top: 1px;
+  flex-shrink: 0;
+}
+
+.admin-alert-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 0.75rem;
+  line-height: 1.4;
+  color: var(--text-muted);
+}
+
+.admin-alert-text strong {
+  color: var(--text-title);
+  font-weight: 700;
+}
+
+/* SELETOR DOS 2 ADMINISTRADORES */
+.admin-selector-wrapper {
+  margin-bottom: 18px;
+}
+
+.admin-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-top: 8px;
+}
+
+@media (max-width: 480px) {
+  .admin-cards-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.admin-card-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  border-radius: var(--radius-md);
+  border: 1.5px solid var(--border-color);
+  background: var(--bg-surface);
+  cursor: pointer;
+  text-align: left;
+  transition: all var(--transition-fast);
+  position: relative;
+}
+
+.admin-card-btn:hover {
+  border-color: var(--green-btn);
+  background: var(--bg-subtle);
+  transform: translateY(-1px);
+}
+
+.admin-card-btn.active {
+  border-color: var(--green-primary);
+  background: var(--bg-green-soft);
+  box-shadow: 0 4px 14px rgba(4, 120, 87, 0.12);
+}
+
+.admin-card-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.dra-avatar {
+  background: #ecfdf5;
+  color: #047857;
+}
+
+.webmaster-avatar {
+  background: #eff6ff;
+  color: #0284c7;
+}
+
+[data-theme='dark'] .dra-avatar {
+  background: rgba(4, 120, 87, 0.25);
+  color: #34d399;
+}
+
+[data-theme='dark'] .webmaster-avatar {
+  background: rgba(2, 132, 199, 0.25);
+  color: #38bdf8;
+}
+
+.admin-card-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+}
+
+.admin-card-name {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text-title);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.admin-card-badge {
+  font-size: 0.67rem;
+  color: var(--text-subtle);
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.admin-card-check {
+  color: var(--green-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* BOTÃO DE SUBMIT ADMINISTRATIVO */
+.btn-login-admin {
+  background: linear-gradient(135deg, #065f46 0%, #047857 50%, #059669 100%) !important;
+  box-shadow: 0 4px 14px rgba(5, 150, 105, 0.3) !important;
+}
+
+.btn-login-admin:hover {
+  background: linear-gradient(135deg, #047857 0%, #059669 50%, #10b981 100%) !important;
+}
+
+/* SELO DE CONFIABILIDADE NO SHOWCASE */
+.showcase-trust-badge {
+  margin-top: 24px;
+  padding-top: 18px;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.74rem;
+  color: #9ca3af;
+}
+
+/* ANIMAÇÃO SUAVE DE ENTRADA */
+.fade-in-section {
+  animation: fadeInQuick 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes fadeInQuick {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 

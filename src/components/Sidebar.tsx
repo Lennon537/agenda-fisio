@@ -9,12 +9,14 @@ interface SidebarProps {
   activeTab: ActiveNavTab;
   onSelectTab: (tab: ActiveNavTab) => void;
   appointmentsCount?: number;
+  userLoggedIn?: string | null;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
   activeTab,
   onSelectTab,
   appointmentsCount = 0,
+  userLoggedIn,
 }) => {
   return (
     <aside className="app-sidebar">
@@ -73,8 +75,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
             onClick={() => onSelectTab('painel-dra')}
           >
             <Leaf size={18} className="nav-item-icon text-green" />
-            <span className="nav-item-label">Painel da Dra. Ketllen</span>
-            <span className="nav-badge-dra">Dra</span>
+            <span className="nav-item-label">
+              {userLoggedIn?.toLowerCase().includes('webmaster')
+                ? 'Painel do Webmaster'
+                : 'Painel da Dra. Ketllen'}
+            </span>
+            <span className="nav-badge-dra">
+              {userLoggedIn?.toLowerCase().includes('webmaster') ? 'Admin' : 'Dra'}
+            </span>
           </button>
         </nav>
       </div>

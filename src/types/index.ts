@@ -76,4 +76,5 @@ export interface PatientMedicalRecord {
 
 export type ActiveNavTab = 'agendar' | 'agendamentos' | 'perfil' | 'painel-dra';
 export type UserRole = 'patient' | 'admin';
+export type AdminType = 'dra' | 'webmaster';
 

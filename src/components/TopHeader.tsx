@@ -64,7 +64,13 @@ export const TopHeader: React.FC<TopHeaderProps> = ({
               title="Acessar perfil ou alternar conta"
             >
               <User size={15} />
-              <span>{userLoggedIn.split(' ')[0]}</span>
+              <span>
+                {userLoggedIn.startsWith('Dra.')
+                  ? 'Dra. Ketllen'
+                  : userLoggedIn.includes('Webmaster')
+                  ? 'Lennon (Admin)'
+                  : userLoggedIn.split(' ')[0]}
+              </span>
             </button>
             {onLogout && (
               <button

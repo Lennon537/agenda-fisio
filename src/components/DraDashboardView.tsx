@@ -20,7 +20,8 @@ import {
   Trash2,
   ExternalLink,
   ClipboardList,
-  Sparkles
+  Sparkles,
+  Laptop
 } from 'lucide-react';
 import {
   ScheduledAppointment,
@@ -43,6 +44,7 @@ interface DraDashboardViewProps {
   onUpdateEncaixes: (encaixes: EncaixeRequest[]) => void;
   onUpdateMedicalRecords: (records: PatientMedicalRecord[]) => void;
   onShowToast: (msg: string) => void;
+  userLoggedIn?: string | null;
 }
 
 export const DraDashboardView: React.FC<DraDashboardViewProps> = ({
@@ -53,6 +55,7 @@ export const DraDashboardView: React.FC<DraDashboardViewProps> = ({
   onUpdateEncaixes,
   onUpdateMedicalRecords,
   onShowToast,
+  userLoggedIn,
 }) => {
   const [currentTab, setCurrentTab] = useState<'agenda' | 'encaixes' | 'prontuario'>('agenda');
 
@@ -253,14 +256,29 @@ export const DraDashboardView: React.FC<DraDashboardViewProps> = ({
       {/* Cabeçalho do Painel */}
       <div className="dra-header-card">
         <div className="dra-header-text">
-          <div className="dra-badge-pill">
-            <Sparkles size={14} />
-            <span>PAINEL CLÍNICO & GESTÃO EXCLUSIVA</span>
-          </div>
-          <h1 className="dra-main-title">Espaço Clínico Dra. Ketllen Souza</h1>
-          <p className="dra-subtitle">
-            Gerencie os atendimentos diários, triagem de encaixes com urgência de dor e prontuários eletrônicos.
-          </p>
+          {userLoggedIn?.toLowerCase().includes('webmaster') ? (
+            <>
+              <div className="dra-badge-pill" style={{ background: '#0284c7', color: '#ffffff' }}>
+                <Laptop size={14} />
+                <span>PAINEL DE GESTÃO DO SITE & WEBMASTER</span>
+              </div>
+              <h1 className="dra-main-title">Gestão do Sistema • Lennon (Webmaster)</h1>
+              <p className="dra-subtitle">
+                Supervisão técnica da clínica, monitoramento dos agendamentos, fila de encaixes e banco de dados.
+              </p>
+            </>
+          ) : (
+            <>
+              <div className="dra-badge-pill">
+                <Sparkles size={14} />
+                <span>PAINEL CLÍNICO & GESTÃO EXCLUSIVA</span>
+              </div>
+              <h1 className="dra-main-title">Espaço Clínico Dra. Ketllen Souza</h1>
+              <p className="dra-subtitle">
+                Gerencie os atendimentos diários, triagem de encaixes com urgência de dor e prontuários eletrônicos.
+              </p>
+            </>
+          )}
         </div>
 
         {/* Resumo de Indicadores Rápidos */}

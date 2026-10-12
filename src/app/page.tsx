@@ -11,6 +11,7 @@ import { EncaixeModal } from '@/components/EncaixeModal';
 import { BookingConfirmModal } from '@/components/BookingConfirmModal';
 import { MobileNav } from '@/components/MobileNav';
 import { DraDashboardView } from '@/components/DraDashboardView';
+import { InitialLoginView } from '@/components/InitialLoginView';
 import {
   ActiveNavTab,
   CareType,
@@ -18,6 +19,7 @@ import {
   EncaixeRequest,
   PatientUser,
   PatientMedicalRecord,
+  AdminType,
 } from '@/types';
 import {
   INITIAL_APPOINTMENTS,
@@ -126,20 +128,26 @@ export default function KetllenSouzaFisioPage() {
     localStorage.setItem('ketlen_theme', next);
   };
 
-  const handleLoginSuccess = (name: string, role: 'patient' | 'admin') => {
+  const handleLoginSuccess = (name: string, role: 'patient' | 'admin', adminType?: AdminType) => {
     setIsAuthenticated(true);
     setUserLoggedIn(name);
     setUserRole(role);
     setCurrentUser((prev) => ({ ...prev, name }));
     localStorage.setItem(
       'ketlen_auth_session',
-      JSON.stringify({ name, role, timestamp: Date.now() })
+      JSON.stringify({ name, role, adminType, timestamp: Date.now() })
     );
     localStorage.setItem('ketlen_user', JSON.stringify({ ...currentUser, name }));
 
-    if (role === 'admin' || name.toLowerCase().includes('ketlen') || name.toLowerCase().includes('ketllen')) {
+    if (role === 'admin') {
       setActiveTab('painel-dra');
-      showToast('✓ Bem-vinda ao Painel Clínico, Dra. Ketllen!');
+      if (adminType === 'webmaster' || name.toLowerCase().includes('webmaster')) {
+        showToast('✓ Bem-vindo, Lennon! Painel administrativo de Webmaster ativo.');
+      } else {
+        showToast('✓ Bem-vinda ao Painel Clínico, Dra. Ketllen!');
+      }
+    } else {
+      setActiveTab('agendar');
     }
   };
 
@@ -202,7 +210,28 @@ export default function KetllenSouzaFisioPage() {
     (r) => r.patientName.toLowerCase() === (userLoggedIn || currentUser.name).toLowerCase()
   ) || medicalRecords[0];
 
-  // Renderização do Sistema Ketllen Souza Fisioterapia (acesso direto conforme os prints)
+  // Renderização da Tela de Login se não estiver autenticado
+  if (!isAuthenticated) {
+    return (
+      <>
+        {toastMessage && (
+          <div className="toast-notification">
+            <Info size={16} />
+            <span>{toastMessage}</span>
+          </div>
+        )}
+        <InitialLoginView
+          theme={theme}
+          onToggleTheme={handleToggleTheme}
+          onLoginSuccess={handleLoginSuccess}
+          onContinueAsGuest={handleContinueAsGuest}
+          onShowToast={showToast}
+        />
+      </>
+    );
+  }
+
+  // Renderização do Sistema Ketllen Souza Fisioterapia (usuário autenticado ou visitante)
   return (
     <div className="ketlen-app-layout">
       {/* Toast Flutuante */}
@@ -221,6 +250,7 @@ export default function KetllenSouzaFisioPage() {
           window.scrollTo({ top: 0, behavior: 'smooth' });
         }}
         appointmentsCount={appointments.length}
+        userLoggedIn={userLoggedIn}
       />
 
       {/* Área Principal de Conteúdo */}
@@ -279,6 +309,7 @@ export default function KetllenSouzaFisioPage() {
                 localStorage.setItem('ketlen_medical_records', JSON.stringify(recs));
               }}
               onShowToast={showToast}
+              userLoggedIn={userLoggedIn}
             />
           )}
         </main>
