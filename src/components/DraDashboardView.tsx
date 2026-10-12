@@ -118,7 +118,7 @@ export const DraDashboardView: React.FC<DraDashboardViewProps> = ({
   const handleOpenGoogleCalendar = (apt: ScheduledAppointment) => {
     const careLabel = apt.careType === 'fisioterapia' ? 'Fisioterapia' : 'Pilates';
     const url = generateGoogleCalendarUrl({
-      title: `${careLabel} - ${apt.patientName} (Ketlen Fisio)`,
+      title: `${careLabel} - ${apt.patientName} (Ketllen Souza Fisioterapia)`,
       description: `Sessão de ${careLabel}.\nPaciente: ${apt.patientName}\nTelefone: ${apt.phone}\nObservações: ${apt.notes || 'Nenhuma'}\nCódigo: ${apt.id}`,
       dateIso: apt.date,
       timeStr: apt.time,
@@ -158,7 +158,7 @@ export const DraDashboardView: React.FC<DraDashboardViewProps> = ({
     const phoneWithCountry = cleanPhone.startsWith('55') ? cleanPhone : `55${cleanPhone}`;
     const careLabel = allocatingEncaixe.careType === 'fisioterapia' ? 'Fisioterapia' : 'Pilates';
     const msg = encodeURIComponent(
-      `Olá, ${allocatingEncaixe.patientName}! 🌿\n\nTemos ótimas notícias da *Ketlen Fisio*: conseguimos um encaixe para você!\n\n📅 *Data:* ${allocatedDate}\n⏰ *Horário:* ${allocatedTime}\n🩺 *Atendimento:* ${careLabel}\n\nPor favor, confirme se você pode comparecer neste horário!`
+      `Olá, ${allocatingEncaixe.patientName}! 🌿\n\nTemos ótimas notícias da *Ketllen Souza Fisioterapia*: conseguimos um encaixe para você!\n\n📅 *Data:* ${allocatedDate}\n⏰ *Horário:* ${allocatedTime}\n🩺 *Atendimento:* ${careLabel}\n\nPor favor, confirme se você pode comparecer neste horário!`
     );
     window.open(`https://wa.me/${phoneWithCountry}?text=${msg}`, '_blank');
 
@@ -257,7 +257,7 @@ export const DraDashboardView: React.FC<DraDashboardViewProps> = ({
             <Sparkles size={14} />
             <span>PAINEL CLÍNICO & GESTÃO EXCLUSIVA</span>
           </div>
-          <h1 className="dra-main-title">Espaço Clínico Dra. Ketlen</h1>
+          <h1 className="dra-main-title">Espaço Clínico Dra. Ketllen Souza</h1>
           <p className="dra-subtitle">
             Gerencie os atendimentos diários, triagem de encaixes com urgência de dor e prontuários eletrônicos.
           </p>
@@ -527,7 +527,7 @@ export const DraDashboardView: React.FC<DraDashboardViewProps> = ({
                               const cleanPhone = enc.phone.replace(/\D/g, '');
                               const phoneWithCountry = cleanPhone.startsWith('55') ? cleanPhone : `55${cleanPhone}`;
                               const msg = encodeURIComponent(
-                                `Olá, ${enc.patientName}! Sou da equipe da *Ketlen Fisio*. Recebemos seu pedido de encaixe. Você tem disponibilidade para esta semana?`
+                                `Olá, ${enc.patientName}! Sou da equipe da *Ketllen Souza Fisioterapia*. Recebemos seu pedido de encaixe. Você tem disponibilidade para esta semana?`
                               );
                               window.open(`https://wa.me/${phoneWithCountry}?text=${msg}`, '_blank');
                             }}

@@ -78,8 +78,8 @@ export const BookingConfirmModal: React.FC<BookingConfirmModalProps> = ({
   const handleOpenGoogleCalendar = (apt: ScheduledAppointment) => {
     const careLabel = apt.careType === 'fisioterapia' ? 'Fisioterapia' : 'Pilates';
     const url = generateGoogleCalendarUrl({
-      title: `${careLabel} - Ketlen Fisio`,
-      description: `Sessão agendada na Ketlen Fisio.\nPaciente: ${apt.patientName}\nCódigo: ${apt.id}\nObservações: ${apt.notes || 'Nenhuma'}`,
+      title: `${careLabel} - Ketllen Souza Fisioterapia`,
+      description: `Sessão agendada na Ketllen Souza Fisioterapia.\nPaciente: ${apt.patientName}\nCódigo: ${apt.id}\nObservações: ${apt.notes || 'Nenhuma'}`,
       dateIso: apt.date,
       timeStr: apt.time,
       durationMinutes: 50,
@@ -117,12 +117,12 @@ export const BookingConfirmModal: React.FC<BookingConfirmModalProps> = ({
     onConfirmBooking(newAppointment);
     setConfirmedAppointment(newAppointment);
 
-    // Enviar mensagem no WhatsApp da Ketlen Fisio
+    // Enviar mensagem no WhatsApp da Ketllen Souza Fisioterapia
     const careTitle = careType === 'fisioterapia' ? 'Fisioterapia' : 'Pilates';
     const dateFormatted = formatDateDisplay(dateIso);
 
     const text =
-      `🌿 *AGENDAMENTO DE SESSÃO - KETLEN FISIO* 🌿\n\n` +
+      `🌿 *AGENDAMENTO DE SESSÃO - KETLLEN SOUZA FISIOTERAPIA* 🌿\n\n` +
       `Olá! Gostaria de confirmar meu agendamento realizado no site:\n\n` +
       `📋 *Cuidado:* ${careTitle}\n` +
       `📅 *Data:* ${dateFormatted}\n` +
@@ -211,7 +211,7 @@ export const BookingConfirmModal: React.FC<BookingConfirmModalProps> = ({
               </div>
               <h2 className="login-title">Confirmar Solicitação de Sessão</h2>
               <p className="login-subtitle">
-                Revise os detalhes e informe seus dados para reserva do horário na Ketlen Fisio.
+                Revise os detalhes e informe seus dados para reserva do horário na Ketllen Souza Fisioterapia.
               </p>
             </div>
 

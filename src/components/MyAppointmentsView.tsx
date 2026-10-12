@@ -32,7 +32,7 @@ export const MyAppointmentsView: React.FC<MyAppointmentsViewProps> = ({
 }) => {
   const handleOpenWhatsApp = (apt: ScheduledAppointment) => {
     const text = encodeURIComponent(
-      `Olá! Gostaria de falar sobre meu agendamento na Ketlen Fisio:\n` +
+      `Olá! Gostaria de falar sobre meu agendamento na Ketllen Souza Fisioterapia:\n` +
       `Código: #${apt.id}\nData: ${apt.date} às ${apt.time}\nPaciente: ${apt.patientName}`
     );
     window.open(`https://wa.me/${CLINIC_INFO.phone}?text=${text}`, '_blank');
@@ -41,8 +41,8 @@ export const MyAppointmentsView: React.FC<MyAppointmentsViewProps> = ({
   const handleOpenGoogleCalendar = (apt: ScheduledAppointment) => {
     const careLabel = apt.careType === 'fisioterapia' ? 'Fisioterapia' : 'Pilates';
     const url = generateGoogleCalendarUrl({
-      title: `${careLabel} - Ketlen Fisio`,
-      description: `Sessão agendada na Ketlen Fisio.\nPaciente: ${apt.patientName}\nCódigo: ${apt.id}\nObservações: ${apt.notes || 'Nenhuma'}`,
+      title: `${careLabel} - Ketllen Souza Fisioterapia`,
+      description: `Sessão agendada na Ketllen Souza Fisioterapia.\nPaciente: ${apt.patientName}\nCódigo: ${apt.id}\nObservações: ${apt.notes || 'Nenhuma'}`,
       dateIso: apt.date,
       timeStr: apt.time,
       durationMinutes: 50,
@@ -174,7 +174,7 @@ export const MyAppointmentsView: React.FC<MyAppointmentsViewProps> = ({
         </div>
       )}
 
-      {/* SEÇÃO: MINHAS ORIENTAÇÕES & EXERCÍCIOS PARA CASA (PRESCRIÇÃO DA DRA. KETLEN) */}
+      {/* SEÇÃO: MINHAS ORIENTAÇÕES & EXERCÍCIOS PARA CASA (PRESCRIÇÃO DA DRA. KETLLEN) */}
       {homeExercises.length > 0 && (
         <div className="patient-home-exercises-block">
           <div className="exercises-section-header">
@@ -184,7 +184,7 @@ export const MyAppointmentsView: React.FC<MyAppointmentsViewProps> = ({
             <div>
               <h3 className="section-title-clean">Minhas Orientações & Exercícios para Casa</h3>
               <p className="section-sub-clean">
-                Prescritos individualmente pela <strong>Dra. Ketlen</strong> para acelerar sua recuperação entre as sessões.
+                Prescritos individualmente pela <strong>Dra. Ketllen Souza</strong> para acelerar sua recuperação entre as sessões.
               </p>
             </div>
           </div>

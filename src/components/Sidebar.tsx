@@ -73,7 +73,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             onClick={() => onSelectTab('painel-dra')}
           >
             <Leaf size={18} className="nav-item-icon text-green" />
-            <span className="nav-item-label">Painel da Dra. Ketlen</span>
+            <span className="nav-item-label">Painel da Dra. Ketllen</span>
             <span className="nav-badge-dra">Dra</span>
           </button>
         </nav>

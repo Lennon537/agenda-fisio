@@ -47,8 +47,8 @@ export const LoginModal: React.FC<LoginModalProps> = ({
 
     if (role === 'admin') {
       // Login de profissional/recepção
-      onLoginSuccess('Ketlen Siqueira (Fisioterapeuta)', 'admin');
-      onShowToast('✓ Bem-vinda ao painel profissional, Dra. Ketlen!');
+      onLoginSuccess('Dra. Ketllen Souza (Fisioterapeuta)', 'admin');
+      onShowToast('✓ Bem-vinda ao painel profissional, Dra. Ketllen!');
     } else {
       // Login de paciente
       const name = identifier.includes('@')
@@ -70,7 +70,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({
 
   const handleQuickAdminDemo = () => {
     setRole('admin');
-    setIdentifier('contato@ketlenfisio.com.br');
+    setIdentifier('contato@ketllensouza.com.br');
     setPassword('admin2026');
     onShowToast('✓ Dados de fisioterapeuta preenchidos para demonstração!');
   };
@@ -95,7 +95,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({
           </div>
           <h2 className="login-title">Acesse seu espaço de cuidado</h2>
           <p className="login-subtitle">
-            Acompanhe suas sessões, histórico de tratamento e solicitações de encaixe na Ketlen Fisio.
+            Acompanhe suas sessões, histórico de tratamento e solicitações de encaixe na Ketllen Souza Fisioterapia.
           </p>
         </div>
 
@@ -134,7 +134,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({
               <input
                 type="text"
                 className="login-input"
-                placeholder={role === 'patient' ? 'Ex: (11) 98765-4321 ou seu e-mail' : 'Ex: ketlen@ketlenfisio.com.br'}
+                placeholder={role === 'patient' ? 'Ex: (11) 98765-4321 ou seu e-mail' : 'Ex: contato@ketllensouza.com.br'}
                 value={identifier}
                 onChange={(e) => setIdentifier(e.target.value)}
                 required
@@ -208,7 +208,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({
               className="btn-demo-pill"
               onClick={handleQuickAdminDemo}
             >
-              🩺 Fisioterapeuta Dra. Ketlen
+              🩺 Fisioterapeuta Dra. Ketllen
             </button>
           </div>
         </div>

@@ -1,7 +1,7 @@
 {
-  "name": "Fisioterapia & Pilates Vitalitá",
-  "short_name": "Fisio & Pilates",
-  "description": "Agendamento online de consultas de fisioterapia e aulas de pilates",
+  "name": "Ketllen Souza Fisioterapia",
+  "short_name": "Ketllen Souza",
+  "description": "Agendamento online de consultas de fisioterapia e aulas de pilates - Ketllen Souza Fisioterapia",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#064e3b",

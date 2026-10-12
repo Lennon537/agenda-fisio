@@ -120,7 +120,7 @@ export const ScheduleView: React.FC<ScheduleViewProps> = ({
         <div className="hero-image-wrapper">
           <Image
             src="/images/pilates_reformer_banner.jpg"
-            alt="Estúdio de Pilates e Fisioterapia Ketlen Fisio com Reformer"
+            alt="Estúdio de Pilates e Fisioterapia Ketllen Souza Fisioterapia com Reformer"
             width={520}
             height={260}
             className="hero-reformer-img"

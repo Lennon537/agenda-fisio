@@ -15,13 +15,13 @@ const outfit = Outfit({
 });
 
 export const metadata: Metadata = {
-  title: 'Agendar sessão | Ketlen Fisio',
-  description: 'Ketlen Fisio - Fisioterapia & Pilates. Agende sua sessão com facilidade ou solicite um encaixe na agenda.',
+  title: 'Agendar sessão | Ketllen Souza Fisioterapia',
+  description: 'Ketllen Souza Fisioterapia & Pilates. Agende sua sessão com facilidade ou solicite um encaixe na agenda.',
   manifest: '/manifest.json',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'black-translucent',
-    title: 'Ketlen Fisio',
+    title: 'Ketllen Souza Fisioterapia',
   },
 };
 

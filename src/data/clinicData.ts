@@ -1,7 +1,7 @@
 import { ScheduledAppointment, EncaixeRequest } from '@/types';
 
 export const CLINIC_INFO = {
-  name: "Ketlen Fisio",
+  name: "Ketllen Souza Fisioterapia",
   subName: "FISIOTERAPIA & PILATES",
   tagline: "Mais movimento. Mais qualidade de vida.",
   subTagline: "Um cuidado próximo, no seu ritmo. Estamos aqui para caminhar com você.",
@@ -11,7 +11,7 @@ export const CLINIC_INFO = {
   welcomeText: "Bem-vindo ao seu espaço de cuidado",
   motto: "Seu movimento, nosso cuidado.",
   mottoSub: "Um passo de cada vez, com você.",
-  footerNotice: "Ketlen Fisio • Cuidar faz parte."
+  footerNotice: "Ketllen Souza Fisioterapia • Cuidar faz parte."
 };
 
 // Horários por padrão do print

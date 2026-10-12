@@ -27,8 +27,8 @@ export const TopHeader: React.FC<TopHeaderProps> = ({
           <Leaf size={18} className="header-leaf-icon" />
         </div>
         <div className="header-brand-text">
-          <span className="header-brand-name">Ketlen Fisio</span>
-          <span className="header-brand-sub">FISIOTERAPIA & PILATES</span>
+          <span className="header-brand-name">{CLINIC_INFO.name}</span>
+          <span className="header-brand-sub">{CLINIC_INFO.subName}</span>
         </div>
       </div>
 

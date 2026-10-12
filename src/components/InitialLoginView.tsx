@@ -50,8 +50,8 @@ export const InitialLoginView: React.FC<InitialLoginViewProps> = ({
     }
 
     if (role === 'admin') {
-      onLoginSuccess('Dra. Ketlen Siqueira', 'admin');
-      onShowToast('✓ Bem-vinda ao sistema, Dra. Ketlen!');
+      onLoginSuccess('Dra. Ketllen Souza', 'admin');
+      onShowToast('✓ Bem-vinda ao sistema, Dra. Ketllen!');
     } else {
       const name = identifier.includes('@')
         ? identifier.split('@')[0]
@@ -70,7 +70,7 @@ export const InitialLoginView: React.FC<InitialLoginViewProps> = ({
 
   const handleQuickAdmin = () => {
     setRole('admin');
-    setIdentifier('ketlen@ketlenfisio.com.br');
+    setIdentifier('contato@ketllensouza.com.br');
     setPassword('admin2026');
     onShowToast('✓ Dados de fisioterapeuta preenchidos para demonstração!');
   };
@@ -114,7 +114,7 @@ export const InitialLoginView: React.FC<InitialLoginViewProps> = ({
             <span className="login-kicker-tag">ACESSO AO ESPAÇO DE CUIDADO</span>
             <h2 className="login-hero-title">Entrar no Sistema</h2>
             <p className="login-hero-sub">
-              Acesse seu histórico de sessões, evolução clínica e solicitações de encaixe na Ketlen Fisio.
+              Acesse seu histórico de sessões, evolução clínica e solicitações de encaixe na Ketllen Souza Fisioterapia.
             </p>
 
             {/* Seletor de Perfil */}
@@ -152,7 +152,7 @@ export const InitialLoginView: React.FC<InitialLoginViewProps> = ({
                   <input
                     type="text"
                     className="login-input"
-                    placeholder={role === 'patient' ? 'Ex: (11) 98765-4321 ou seu e-mail' : 'Ex: ketlen@ketlenfisio.com.br'}
+                    placeholder={role === 'patient' ? 'Ex: (11) 98765-4321 ou seu e-mail' : 'Ex: contato@ketllensouza.com.br'}
                     value={identifier}
                     onChange={(e) => setIdentifier(e.target.value)}
                     required
@@ -204,7 +204,7 @@ export const InitialLoginView: React.FC<InitialLoginViewProps> = ({
               </div>
 
               <button type="submit" className="btn-login-submit">
-                <span>Acessar Espaço Ketlen Fisio</span>
+                <span>Acessar Espaço Ketllen Souza Fisioterapia</span>
                 <ArrowRight size={17} />
               </button>
             </form>
@@ -240,7 +240,7 @@ export const InitialLoginView: React.FC<InitialLoginViewProps> = ({
                   className="btn-demo-pill"
                   onClick={handleQuickAdmin}
                 >
-                  🩺 Dra. Ketlen (Fisioterapeuta)
+                  🩺 Dra. Ketllen (Fisioterapeuta)
                 </button>
               </div>
             </div>
@@ -278,7 +278,7 @@ export const InitialLoginView: React.FC<InitialLoginViewProps> = ({
             <div className="showcase-image-wrapper">
               <Image
                 src="/images/pilates_reformer_banner.jpg"
-                alt="Ketlen Fisio Studio"
+                alt="Ketllen Souza Fisioterapia Studio"
                 width={800}
                 height={600}
                 className="showcase-bg-image"

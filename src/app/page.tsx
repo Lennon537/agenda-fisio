@@ -26,7 +26,7 @@ import {
 } from '@/data/clinicData';
 import { Info } from 'lucide-react';
 
-export default function KetlenFisioPage() {
+export default function KetllenSouzaFisioPage() {
   const [activeTab, setActiveTab] = useState<ActiveNavTab>('agendar');
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
 
@@ -137,9 +137,9 @@ export default function KetlenFisioPage() {
     );
     localStorage.setItem('ketlen_user', JSON.stringify({ ...currentUser, name }));
 
-    if (role === 'admin' || name.toLowerCase().includes('ketlen')) {
+    if (role === 'admin' || name.toLowerCase().includes('ketlen') || name.toLowerCase().includes('ketllen')) {
       setActiveTab('painel-dra');
-      showToast('✓ Bem-vinda ao Painel Clínico, Dra. Ketlen!');
+      showToast('✓ Bem-vinda ao Painel Clínico, Dra. Ketllen!');
     }
   };
 
@@ -202,7 +202,7 @@ export default function KetlenFisioPage() {
     (r) => r.patientName.toLowerCase() === (userLoggedIn || currentUser.name).toLowerCase()
   ) || medicalRecords[0];
 
-  // Renderização do Sistema Ketlen Fisio (acesso direto conforme os prints)
+  // Renderização do Sistema Ketllen Souza Fisioterapia (acesso direto conforme os prints)
   return (
     <div className="ketlen-app-layout">
       {/* Toast Flutuante */}

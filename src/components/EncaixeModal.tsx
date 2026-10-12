@@ -76,7 +76,7 @@ export const EncaixeModal: React.FC<EncaixeModalProps> = ({
 
     onSubmitEncaixe(newEncaixe);
 
-    // Enviar mensagem direta para o WhatsApp da Ketlen Fisio
+    // Enviar mensagem direta para o WhatsApp da Ketllen Souza Fisioterapia
     const careLabel = careType === 'fisioterapia' ? 'Fisioterapia' : 'Pilates';
     const shiftLabel =
       preferredShift === 'manha'
@@ -86,7 +86,7 @@ export const EncaixeModal: React.FC<EncaixeModalProps> = ({
         : 'Qualquer horário';
 
     const text =
-      `🌿 *SOLICITAÇÃO DE ENCAIXE - KETLEN FISIO* 🌿\n\n` +
+      `🌿 *SOLICITAÇÃO DE ENCAIXE - KETLLEN SOUZA FISIOTERAPIA* 🌿\n\n` +
       `Olá! Gostaria de pedir um encaixe na agenda:\n\n` +
       `📋 *Cuidado:* ${careLabel}\n` +
       `⚡ *Nível de Dor:* ${painLevel}/10\n` +

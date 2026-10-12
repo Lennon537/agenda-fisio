@@ -18,7 +18,7 @@ export interface GoogleCalendarEventOptions {
 export function generateGoogleCalendarUrl({
   title,
   description,
-  location = 'Ketlen Fisio - Fisioterapia & Pilates (Av. Paulista, 1500 - São Paulo, SP)',
+  location = 'Ketllen Souza Fisioterapia (Av. Paulista, 1500 - São Paulo, SP)',
   dateIso,
   timeStr,
   durationMinutes = 50,
@@ -80,11 +80,11 @@ export function generateWhatsAppReminderUrl({
     : `Olá, ${patientName}! Tudo bem? 🌿`;
 
   const timeNotice = type === '2h'
-    ? `Lembramos que sua sessão de *${careLabel}* na *Ketlen Fisio* começa em breve, às *${timeStr}*.`
-    : `Lembramos que sua sessão de *${careLabel}* na *Ketlen Fisio* está agendada para amanhã, *${dateDisplay}*, às *${timeStr}*.`;
+    ? `Lembramos que sua sessão de *${careLabel}* na *Ketllen Souza Fisioterapia* começa em breve, às *${timeStr}*.`
+    : `Lembramos que sua sessão de *${careLabel}* na *Ketllen Souza Fisioterapia* está agendada para amanhã, *${dateDisplay}*, às *${timeStr}*.`;
 
   const text = encodeURIComponent(
-    `${greeting}\n\n${timeNotice}\n\n📍 *Endereço:* Av. Paulista, 1500 - Ketlen Fisio\n\nPor favor, responda com *CONFIRMAR* para garantir seu horário ou nos avise caso precise remarcar.\n\nAtenciosamente,\n*Dra. Ketlen & Equipe*`
+    `${greeting}\n\n${timeNotice}\n\n📍 *Endereço:* Av. Paulista, 1500 - Ketllen Souza Fisioterapia\n\nPor favor, responda com *CONFIRMAR* para garantir seu horário ou nos avise caso precise remarcar.\n\nAtenciosamente,\n*Dra. Ketllen Souza & Equipe*`
   );
 
   return `https://wa.me/${phoneWithCountry}?text=${text}`;

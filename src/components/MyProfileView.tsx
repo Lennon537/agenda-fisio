@@ -51,7 +51,7 @@ export const MyProfileView: React.FC<MyProfileViewProps> = ({
           <span className="header-kicker">INFORMAÇÕES PESSOAIS</span>
           <h2 className="header-main-title">Meu perfil</h2>
           <p className="header-subtitle">
-            Mantenha seus dados atualizados para contato e histórico de atendimento na Ketlen Fisio.
+            Mantenha seus dados atualizados para contato e histórico de atendimento na Ketllen Souza Fisioterapia.
           </p>
         </div>
 
