@@ -4,24 +4,18 @@ import React, { useState } from 'react';
 import Image from 'next/image';
 import {
   Leaf,
-  User,
-  Phone,
   Mail,
   Lock,
   Eye,
   EyeOff,
   ArrowRight,
   ShieldCheck,
-  Moon,
-  Sun,
-  Activity,
-  CheckCircle2,
-  Sparkles,
-  Calendar,
+  Heart,
   Stethoscope,
   Laptop,
-  AlertCircle,
-  KeyRound
+  CheckCircle2,
+  Calendar,
+  Sparkles
 } from 'lucide-react';
 import { CLINIC_INFO } from '@/data/clinicData';
 import { AdminType } from '@/types';
@@ -43,20 +37,19 @@ export const InitialLoginView: React.FC<InitialLoginViewProps> = ({
 }) => {
   const [role, setRole] = useState<'patient' | 'admin'>('patient');
 
-  // Paciente State
-  const [patientMode, setPatientMode] = useState<'whatsapp' | 'email'>('whatsapp');
-  const [patientInput, setPatientInput] = useState('');
-  const [patientName, setPatientName] = useState('');
-  const [patientPassword, setPatientPassword] = useState('');
+  // Estado do Paciente
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(true);
 
-  // Administrador State (Exclusivo para as 2 pessoas cadastradas)
+  // Estado dos 2 Administradores
   const [selectedAdmin, setSelectedAdmin] = useState<AdminType>('dra');
   const [adminEmail, setAdminEmail] = useState('dra.ketllen@ketllensouza.com.br');
   const [adminPassword, setAdminPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
+  const [showAdminPassword, setShowAdminPassword] = useState(false);
 
-  // Manipular seleção do Administrador (Dra. Ketllen ou Lennon/Webmaster)
+  // Alternar Administrador
   const handleSelectAdmin = (type: AdminType) => {
     setSelectedAdmin(type);
     if (type === 'dra') {
@@ -70,15 +63,13 @@ export const InitialLoginView: React.FC<InitialLoginViewProps> = ({
   const handlePatientSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!patientInput.trim()) {
-      onShowToast(`Por favor, informe seu ${patientMode === 'whatsapp' ? 'WhatsApp' : 'E-mail'}.`);
+    if (!email.trim()) {
+      onShowToast('Por favor, informe seu e-mail ou WhatsApp.');
       return;
     }
 
-    const displayName = patientName.trim()
-      ? patientName.trim()
-      : patientInput.includes('@')
-      ? patientInput.split('@')[0]
+    const displayName = email.includes('@')
+      ? email.split('@')[0]
       : 'Mariana Duarte';
 
     onLoginSuccess(displayName, 'patient');
@@ -106,11 +97,9 @@ export const InitialLoginView: React.FC<InitialLoginViewProps> = ({
   // Demonstração Rápida: Paciente
   const handleQuickPatient = () => {
     setRole('patient');
-    setPatientMode('whatsapp');
-    setPatientInput('(11) 98765-4321');
-    setPatientName('Mariana Duarte');
-    setPatientPassword('123456');
-    onShowToast('✓ Dados de paciente (Mariana) preenchidos!');
+    setEmail('mariana.duarte@email.com');
+    setPassword('123456');
+    onShowToast('✓ Credenciais da paciente Mariana preenchidas!');
   };
 
   // Demonstração Rápida: Dra. Ketllen
@@ -119,287 +108,288 @@ export const InitialLoginView: React.FC<InitialLoginViewProps> = ({
     setSelectedAdmin('dra');
     setAdminEmail('dra.ketllen@ketllensouza.com.br');
     setAdminPassword('admin2026');
-    onShowToast('✓ Dados da Dra. Ketllen preenchidos para demonstração!');
+    onShowToast('✓ Credenciais da Dra. Ketllen preenchidas!');
   };
 
-  // Demonstração Rápida: Lennon (Webmaster)
+  // Demonstração Rápida: Lennon Webmaster
   const handleQuickWebmaster = () => {
     setRole('admin');
     setSelectedAdmin('webmaster');
     setAdminEmail('admin@ketllensouza.com.br');
     setAdminPassword('admin2026');
-    onShowToast('✓ Dados do Webmaster (Lennon) preenchidos para demonstração!');
+    onShowToast('✓ Credenciais de Webmaster (Lennon) preenchidas!');
   };
 
   return (
-    <div className="initial-login-screen">
-      {/* Barra Superior */}
-      <header className="login-screen-topbar">
-        <div className="brand-logo-combo">
-          <div className="brand-logo-circle">
-            <Leaf size={22} className="brand-leaf-icon" />
+    <div className="lovable-login-root">
+      {/* ==============================================================
+          COLUNA ESQUERDA: HERO VISUAL (ESTÚDIO COM REFORMER & BRANDING)
+          ============================================================== */}
+      <div className="lovable-hero-col">
+        {/* Imagem de Fundo com Reformer de Pilates */}
+        <div className="lovable-hero-bg">
+          <Image
+            src="/images/login_hero_studio.jpg"
+            alt="Estúdio de Pilates e Fisioterapia Ketllen Souza"
+            fill
+            priority
+            className="lovable-hero-img"
+            sizes="(max-width: 1024px) 100vw, 50vw"
+          />
+          <div className="lovable-hero-overlay" />
+        </div>
+
+        {/* Topo Esquerdo: Marca Ketllen Souza Fisioterapia */}
+        <div className="lovable-hero-top">
+          <div className="lovable-brand-logo-circle">
+            <Leaf size={22} className="lovable-leaf-svg" />
           </div>
-          <div className="brand-text-block">
-            <h1 className="brand-name">{CLINIC_INFO.name}</h1>
-            <span className="brand-sub">{CLINIC_INFO.subName}</span>
+          <div className="lovable-brand-text">
+            <h1 className="lovable-brand-name">
+              Ketllen Souza<br />Fisioterapia
+            </h1>
+            <span className="lovable-brand-sub">FISIOTERAPIA & PILATES</span>
           </div>
         </div>
 
-        <div className="login-topbar-actions">
-          <button
-            type="button"
-            className="btn-guest-topbar-link"
-            onClick={onContinueAsGuest}
-            title="Acessar agenda sem realizar login"
-          >
-            <Calendar size={15} />
-            <span className="desktop-only-text">Ver agenda sem login</span>
-          </button>
+        {/* Base Esquerda: Título de Impacto & Filosofia */}
+        <div className="lovable-hero-bottom">
+          <span className="lovable-hero-kicker">CUIDAR DE VOCÊ COMEÇA AQUI</span>
+          <h2 className="lovable-hero-title">
+            Mais movimento.<br />
+            Mais qualidade<br />
+            de vida.
+          </h2>
+          <p className="lovable-hero-sub">
+            Um cuidado próximo, no seu ritmo.<br />
+            Estamos aqui para caminhar com você.
+          </p>
 
-          <button
-            type="button"
-            className="theme-toggle-btn"
-            onClick={onToggleTheme}
-            title={theme === 'dark' ? 'Ativar Modo Claro' : 'Ativar Modo Escuro'}
-            aria-label="Alternar tema"
-          >
-            {theme === 'dark' ? (
-              <Sun size={18} className="theme-icon sun-icon" />
-            ) : (
-              <Moon size={18} className="theme-icon moon-icon" />
-            )}
-          </button>
-        </div>
-      </header>
-
-      {/* Container Central com Split Screen */}
-      <div className="login-split-container">
-        {/* Coluna Esquerda: Formulário Moderno */}
-        <div className="login-form-column">
-          <div className="login-form-card login-glass-card">
-            <span className="login-kicker-tag">PORTAL DE ACESSO & AGENDAMENTO</span>
-            <h2 className="login-hero-title">Bem-vindo(a)</h2>
-            <p className="login-hero-sub">
-              {role === 'patient'
-                ? 'Acesse seu histórico, agendamentos confirmados e exercícios para casa.'
-                : 'Ambiente restrito exclusivo para os 2 administradores autorizados.'}
-            </p>
-
-            {/* Seletor Segmentado de Perfil: Paciente vs Administrador */}
-            <div className="login-segmented-tabs">
-              <button
-                type="button"
-                className={`login-segment-btn ${role === 'patient' ? 'active' : ''}`}
-                onClick={() => setRole('patient')}
-              >
-                <User size={16} />
-                <span>Sou Paciente</span>
-              </button>
-              <button
-                type="button"
-                className={`login-segment-btn admin-segment-tab ${role === 'admin' ? 'active' : ''}`}
-                onClick={() => setRole('admin')}
-              >
-                <ShieldCheck size={16} />
-                <span>Administrador</span>
-                <span className="login-admin-counter-pill">2 contas</span>
-              </button>
+          <div className="lovable-hero-footer-divider">
+            <div className="lovable-hero-quote-row">
+              <Heart size={16} className="lovable-heart-svg" />
+              <span>Seu movimento, nosso cuidado.</span>
             </div>
+          </div>
+        </div>
+      </div>
 
-            {/* ==============================================================
-                FORMULÁRIO 1: ÁREA DO PACIENTE
-                ============================================================== */}
-            {role === 'patient' && (
-              <form onSubmit={handlePatientSubmit} className="login-form fade-in-section">
-                {/* Alternador de Método: WhatsApp ou E-mail */}
-                <div className="patient-mode-chips-row">
-                  <span className="patient-mode-label">Entrar com:</span>
-                  <button
-                    type="button"
-                    className={`patient-mode-chip ${patientMode === 'whatsapp' ? 'active' : ''}`}
-                    onClick={() => {
-                      setPatientMode('whatsapp');
-                      setPatientInput('');
-                    }}
-                  >
-                    <Phone size={13} />
-                    <span>WhatsApp</span>
-                  </button>
-                  <button
-                    type="button"
-                    className={`patient-mode-chip ${patientMode === 'email' ? 'active' : ''}`}
-                    onClick={() => {
-                      setPatientMode('email');
-                      setPatientInput('');
-                    }}
-                  >
-                    <Mail size={13} />
-                    <span>E-mail</span>
-                  </button>
-                </div>
+      {/* ==============================================================
+          COLUNA DIREITA: PAINEL DE LOGIN (EXATAMENTE COMO NA IMAGEM)
+          ============================================================== */}
+      <div className="lovable-form-col">
+        {/* Barra Superior da Coluna Direita: Abas & Ambiente Seguro */}
+        <div className="lovable-form-topbar">
+          <div className="lovable-role-switch">
+            <button
+              type="button"
+              className={`lovable-role-tab ${role === 'patient' ? 'active' : ''}`}
+              onClick={() => setRole('patient')}
+            >
+              ESPAÇO DO PACIENTE
+            </button>
+            <span className="lovable-role-divider">•</span>
+            <button
+              type="button"
+              className={`lovable-role-tab admin-tab ${role === 'admin' ? 'active' : ''}`}
+              onClick={() => setRole('admin')}
+              title="Acesso exclusivo para Dra. Ketllen e Lennon Webmaster"
+            >
+              ADMINISTRADOR (2 CONTAS)
+            </button>
+          </div>
 
-                {/* Campo Identificador (WhatsApp ou E-mail) */}
-                <div className="login-form-group">
-                  <label className="login-label">
-                    {patientMode === 'whatsapp' ? 'Seu WhatsApp' : 'Seu E-mail'}
-                  </label>
-                  <div className="login-input-wrapper">
-                    {patientMode === 'whatsapp' ? (
-                      <Phone size={17} className="login-input-icon" />
-                    ) : (
-                      <Mail size={17} className="login-input-icon" />
-                    )}
+          <div className="lovable-secure-badge">
+            <ShieldCheck size={14} className="lovable-shield-icon" />
+            <span>Ambiente seguro</span>
+          </div>
+        </div>
+
+        {/* Centro da Coluna: Card de Formulário */}
+        <div className="lovable-form-center">
+          {/* Ícone Central de Folha */}
+          <div className="lovable-leaf-badge">
+            <Leaf size={24} className="lovable-center-leaf" />
+          </div>
+
+          {/* ==========================================================
+              FLUXO 1: ESPAÇO DO PACIENTE (100% FIEL À IMAGEM)
+              ========================================================== */}
+          {role === 'patient' && (
+            <div className="lovable-form-box fade-in-quick">
+              <div className="lovable-header-text">
+                <span className="lovable-kicker-tag">BEM-VINDO AO SEU ESPAÇO DE CUIDADO</span>
+                <h3 className="lovable-main-title">Que bom ter você aqui.</h3>
+                <p className="lovable-main-sub">Entre para cuidar do seu próximo movimento.</p>
+              </div>
+
+              <form onSubmit={handlePatientSubmit} className="lovable-form-body">
+                {/* Campo E-mail */}
+                <div className="lovable-field-group">
+                  <label className="lovable-field-label">E-mail</label>
+                  <div className="lovable-input-wrapper">
+                    <Mail size={18} className="lovable-input-icon" />
                     <input
-                      type={patientMode === 'whatsapp' ? 'tel' : 'email'}
-                      className="login-input"
-                      placeholder={
-                        patientMode === 'whatsapp'
-                          ? 'Ex: (11) 98765-4321'
-                          : 'Ex: seu.nome@email.com'
-                      }
-                      value={patientInput}
-                      onChange={(e) => setPatientInput(e.target.value)}
+                      type="text"
+                      className="lovable-input"
+                      placeholder="seu@email.com"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
                       required
                     />
                   </div>
                 </div>
 
-                {/* Campo Nome (Opcional ou para personalização) */}
-                <div className="login-form-group">
-                  <label className="login-label">Nome Completo (Opcional)</label>
-                  <div className="login-input-wrapper">
-                    <User size={17} className="login-input-icon" />
+                {/* Campo Senha */}
+                <div className="lovable-field-group">
+                  <label className="lovable-field-label">Senha</label>
+                  <div className="lovable-input-wrapper">
+                    <Lock size={18} className="lovable-input-icon" />
                     <input
-                      type="text"
-                      className="login-input"
-                      placeholder="Ex: Mariana Duarte"
-                      value={patientName}
-                      onChange={(e) => setPatientName(e.target.value)}
+                      type={showPassword ? 'text' : 'password'}
+                      className="lovable-input"
+                      placeholder="Digite sua senha"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      required
                     />
+                    <button
+                      type="button"
+                      className="lovable-eye-btn"
+                      onClick={() => setShowPassword(!showPassword)}
+                      tabIndex={-1}
+                      aria-label={showPassword ? 'Ocultar senha' : 'Exibir senha'}
+                    >
+                      {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                    </button>
                   </div>
                 </div>
 
-                {/* Lembrar e termos */}
-                <div className="remember-row">
-                  <label className="remember-checkbox-label">
+                {/* Linha Lembrar de mim / Esqueci minha senha */}
+                <div className="lovable-options-row">
+                  <label className="lovable-checkbox-label">
                     <input
                       type="checkbox"
                       checked={rememberMe}
                       onChange={(e) => setRememberMe(e.target.checked)}
+                      className="lovable-checkbox-input"
                     />
-                    <span>Lembrar meu acesso neste dispositivo</span>
+                    <span className="lovable-custom-checkbox">
+                      {rememberMe && <span className="lovable-check-icon">✓</span>}
+                    </span>
+                    <span className="lovable-checkbox-text">Lembrar de mim</span>
                   </label>
-                </div>
 
-                {/* Botão de Entrar Paciente */}
-                <button type="submit" className="btn-login-submit">
-                  <span>Acessar Espaço do Paciente</span>
-                  <ArrowRight size={17} />
-                </button>
-
-                {/* Divisor */}
-                <div className="login-divider-line">
-                  <span>ou continue diretamente</span>
-                </div>
-
-                {/* Botão Convidado */}
-                <button
-                  type="button"
-                  className="btn-guest-direct"
-                  onClick={onContinueAsGuest}
-                >
-                  <Calendar size={16} />
-                  <span>Agendar sessão sem cadastro</span>
-                  <ArrowRight size={15} style={{ marginLeft: 'auto' }} />
-                </button>
-
-                {/* Atalho de Demonstração */}
-                <div className="login-demo-helpers">
-                  <span className="demo-helpers-title">Teste rápido de paciente:</span>
                   <button
                     type="button"
-                    className="btn-demo-pill"
-                    onClick={handleQuickPatient}
+                    className="lovable-forgot-link"
+                    onClick={() => onShowToast('Link de recuperação enviado para seu e-mail cadastrado!')}
                   >
-                    👤 Mariana Duarte (Paciente com sessões)
+                    Esqueci minha senha
+                  </button>
+                </div>
+
+                {/* Botão Principal: Entrar na minha conta */}
+                <button type="submit" className="lovable-submit-btn">
+                  <span>Entrar na minha conta</span>
+                  <ArrowRight size={18} className="lovable-submit-arrow" />
+                </button>
+
+                {/* Link Secundário: Ainda não tem uma conta? Cadastre-se → */}
+                <div className="lovable-signup-row">
+                  <span className="lovable-signup-text">Ainda não tem uma conta?</span>
+                  <button
+                    type="button"
+                    className="lovable-signup-link"
+                    onClick={onContinueAsGuest}
+                  >
+                    Cadastre-se <ArrowRight size={14} style={{ display: 'inline', verticalAlign: 'middle', marginLeft: 2 }} />
+                  </button>
+                </div>
+
+                {/* Atalho Discreto para Testes */}
+                <div className="lovable-quick-test-bar">
+                  <button
+                    type="button"
+                    className="lovable-quick-demo-pill"
+                    onClick={handleQuickPatient}
+                    title="Preencher com dados de teste da paciente Mariana"
+                  >
+                    👤 Preencher paciente de teste (Mariana)
+                  </button>
+                  <button
+                    type="button"
+                    className="lovable-quick-demo-pill"
+                    onClick={onContinueAsGuest}
+                    title="Acessar a agenda diretamente sem cadastro"
+                  >
+                    <Calendar size={13} style={{ display: 'inline', marginRight: 4 }} />
+                    Ver agenda como visitante
                   </button>
                 </div>
               </form>
-            )}
+            </div>
+          )}
 
-            {/* ==============================================================
-                FORMULÁRIO 2: ÁREA DE ADMINISTRADOR (SOMENTE 2 PESSOAS)
-                ============================================================== */}
-            {role === 'admin' && (
-              <form onSubmit={handleAdminSubmit} className="login-form fade-in-section">
-                {/* Banner de Segurança & Esclarecimento */}
-                <div className="admin-security-alert">
-                  <div className="admin-alert-icon">
-                    <ShieldCheck size={18} color="#059669" />
+          {/* ==========================================================
+              FLUXO 2: ACESSO DE ADMINISTRADOR (EXCLUSIVO 2 PESSOAS)
+              ========================================================== */}
+          {role === 'admin' && (
+            <div className="lovable-form-box fade-in-quick">
+              <div className="lovable-header-text">
+                <span className="lovable-kicker-tag admin-kicker">ÁREA RESTRITA • 2 ADMINISTRADORES</span>
+                <h3 className="lovable-main-title">Painel de Gestão</h3>
+                <p className="lovable-main-sub">
+                  Acesso exclusivo para <strong>Dra. Ketllen Souza</strong> e <strong>Lennon (Webmaster)</strong>.
+                </p>
+              </div>
+
+              {/* Seletor Visual dos 2 Administradores */}
+              <div className="lovable-admin-switch-cards">
+                <button
+                  type="button"
+                  className={`lovable-admin-card ${selectedAdmin === 'dra' ? 'active' : ''}`}
+                  onClick={() => handleSelectAdmin('dra')}
+                >
+                  <div className="lovable-admin-card-icon dra-icon">
+                    <Stethoscope size={18} />
                   </div>
-                  <div className="admin-alert-text">
-                    <strong>Acesso Restrito: 2 Administradores</strong>
-                    <span>
-                      Cadastrados exclusivamente: <strong>Dra. Ketllen Souza</strong> (Clínica) e{' '}
-                      <strong>Lennon</strong> (Webmaster do site).
-                    </span>
+                  <div className="lovable-admin-card-text">
+                    <strong>Dra. Ketllen Souza</strong>
+                    <span>Fisioterapeuta & Diretora</span>
                   </div>
-                </div>
+                  {selectedAdmin === 'dra' && (
+                    <CheckCircle2 size={16} className="lovable-admin-check" />
+                  )}
+                </button>
 
-                {/* Seletor Visual dos 2 Administradores */}
-                <div className="admin-selector-wrapper">
-                  <label className="login-label">Selecione o Administrador:</label>
-                  <div className="admin-cards-grid">
-                    {/* Card 1: Dra. Ketllen Souza */}
-                    <button
-                      type="button"
-                      className={`admin-card-btn ${selectedAdmin === 'dra' ? 'active' : ''}`}
-                      onClick={() => handleSelectAdmin('dra')}
-                    >
-                      <div className="admin-card-avatar dra-avatar">
-                        <Stethoscope size={18} />
-                      </div>
-                      <div className="admin-card-info">
-                        <strong className="admin-card-name">Dra. Ketllen Souza</strong>
-                        <span className="admin-card-badge">Fisioterapeuta & Diretora</span>
-                      </div>
-                      {selectedAdmin === 'dra' && (
-                        <div className="admin-card-check">
-                          <CheckCircle2 size={16} />
-                        </div>
-                      )}
-                    </button>
-
-                    {/* Card 2: Lennon (Webmaster / Responsável pelo Site) */}
-                    <button
-                      type="button"
-                      className={`admin-card-btn ${selectedAdmin === 'webmaster' ? 'active' : ''}`}
-                      onClick={() => handleSelectAdmin('webmaster')}
-                    >
-                      <div className="admin-card-avatar webmaster-avatar">
-                        <Laptop size={18} />
-                      </div>
-                      <div className="admin-card-info">
-                        <strong className="admin-card-name">Lennon</strong>
-                        <span className="admin-card-badge">Webmaster & Suporte</span>
-                      </div>
-                      {selectedAdmin === 'webmaster' && (
-                        <div className="admin-card-check">
-                          <CheckCircle2 size={16} />
-                        </div>
-                      )}
-                    </button>
+                <button
+                  type="button"
+                  className={`lovable-admin-card ${selectedAdmin === 'webmaster' ? 'active' : ''}`}
+                  onClick={() => handleSelectAdmin('webmaster')}
+                >
+                  <div className="lovable-admin-card-icon webmaster-icon">
+                    <Laptop size={18} />
                   </div>
-                </div>
+                  <div className="lovable-admin-card-text">
+                    <strong>Lennon</strong>
+                    <span>Webmaster & Suporte do Site</span>
+                  </div>
+                  {selectedAdmin === 'webmaster' && (
+                    <CheckCircle2 size={16} className="lovable-admin-check" />
+                  )}
+                </button>
+              </div>
 
-                {/* E-mail Profissional Vinculado */}
-                <div className="login-form-group">
-                  <label className="login-label">E-mail Profissional Autorizado</label>
-                  <div className="login-input-wrapper">
-                    <Mail size={17} className="login-input-icon" />
+              <form onSubmit={handleAdminSubmit} className="lovable-form-body">
+                {/* Campo E-mail do Administrador */}
+                <div className="lovable-field-group">
+                  <label className="lovable-field-label">E-mail Autorizado</label>
+                  <div className="lovable-input-wrapper">
+                    <Mail size={18} className="lovable-input-icon" />
                     <input
                       type="email"
-                      className="login-input"
+                      className="lovable-input"
                       value={adminEmail}
                       onChange={(e) => setAdminEmail(e.target.value)}
                       required
@@ -407,23 +397,14 @@ export const InitialLoginView: React.FC<InitialLoginViewProps> = ({
                   </div>
                 </div>
 
-                {/* Senha de Acesso Administrativo */}
-                <div className="login-form-group">
-                  <div className="password-header-row">
-                    <label className="login-label">Chave de Segurança / Senha</label>
-                    <button
-                      type="button"
-                      className="forgot-password-link"
-                      onClick={() => onShowToast('Dica de demonstração: use a senha admin2026')}
-                    >
-                      Esqueceu?
-                    </button>
-                  </div>
-                  <div className="login-input-wrapper">
-                    <KeyRound size={17} className="login-input-icon" />
+                {/* Campo Senha */}
+                <div className="lovable-field-group">
+                  <label className="lovable-field-label">Chave de Segurança / Senha</label>
+                  <div className="lovable-input-wrapper">
+                    <Lock size={18} className="lovable-input-icon" />
                     <input
-                      type={showPassword ? 'text' : 'password'}
-                      className="login-input"
+                      type={showAdminPassword ? 'text' : 'password'}
+                      className="lovable-input"
                       placeholder="Senha do administrador (admin2026)"
                       value={adminPassword}
                       onChange={(e) => setAdminPassword(e.target.value)}
@@ -431,102 +412,59 @@ export const InitialLoginView: React.FC<InitialLoginViewProps> = ({
                     />
                     <button
                       type="button"
-                      className="toggle-password-btn"
-                      onClick={() => setShowPassword(!showPassword)}
+                      className="lovable-eye-btn"
+                      onClick={() => setShowAdminPassword(!showAdminPassword)}
                       tabIndex={-1}
-                      title={showPassword ? 'Ocultar senha' : 'Ver senha'}
+                      aria-label={showAdminPassword ? 'Ocultar senha' : 'Exibir senha'}
                     >
-                      {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                      {showAdminPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                     </button>
                   </div>
                 </div>
 
-                {/* Botão de Entrar como Administrador */}
-                <button type="submit" className="btn-login-submit btn-login-admin">
-                  <ShieldCheck size={17} />
+                {/* Botão de Entrar Admin */}
+                <button type="submit" className="lovable-submit-btn">
                   <span>
                     {selectedAdmin === 'dra'
                       ? 'Entrar no Painel da Dra. Ketllen'
                       : 'Entrar como Webmaster (Suporte)'}
                   </span>
-                  <ArrowRight size={17} style={{ marginLeft: 'auto' }} />
+                  <ArrowRight size={18} className="lovable-submit-arrow" />
                 </button>
 
-                {/* Atalhos Rápidos para Testes dos Administradores */}
-                <div className="login-demo-helpers">
-                  <span className="demo-helpers-title">Preenchimento rápido de teste:</span>
-                  <div className="demo-buttons-row">
-                    <button
-                      type="button"
-                      className="btn-demo-pill"
-                      onClick={handleQuickDra}
-                    >
-                      🩺 Dra. Ketllen (1 clique)
-                    </button>
-                    <button
-                      type="button"
-                      className="btn-demo-pill"
-                      onClick={handleQuickWebmaster}
-                    >
-                      💻 Lennon Webmaster (1 clique)
-                    </button>
-                  </div>
+                {/* Atalhos Rápidos para Teste */}
+                <div className="lovable-quick-test-bar">
+                  <button
+                    type="button"
+                    className="lovable-quick-demo-pill"
+                    onClick={handleQuickDra}
+                  >
+                    🩺 Dra. Ketllen (1 clique)
+                  </button>
+                  <button
+                    type="button"
+                    className="lovable-quick-demo-pill"
+                    onClick={handleQuickWebmaster}
+                  >
+                    💻 Lennon Webmaster (1 clique)
+                  </button>
                 </div>
               </form>
-            )}
+            </div>
+          )}
+
+          {/* Badge Inferior com Coração */}
+          <div className="lovable-quote-pill">
+            <Heart size={15} className="lovable-quote-heart" />
+            <span>Um passo de cada vez, com você.</span>
           </div>
         </div>
 
-        {/* Coluna Direita: Showcase Visual Premium */}
-        <div className="login-showcase-column">
-          <div className="showcase-content-box">
-            <div className="showcase-card-overlay">
-              <span className="hero-tag">FISIOTERAPIA & PILATES</span>
-              <h3 className="showcase-title">{CLINIC_INFO.tagline}</h3>
-              <p className="showcase-desc">{CLINIC_INFO.subTagline}</p>
-
-              <div className="showcase-features-list">
-                <div className="feature-row">
-                  <CheckCircle2 size={18} color="#10b981" />
-                  <span>Atendimento individualizado e fisioterapia humanizada</span>
-                </div>
-                <div className="feature-row">
-                  <CheckCircle2 size={18} color="#10b981" />
-                  <span>Estúdio completo de Pilates Reformer & Cadillac</span>
-                </div>
-                <div className="feature-row">
-                  <CheckCircle2 size={18} color="#10b981" />
-                  <span>Fila inteligente de encaixes prioritários por nível de dor</span>
-                </div>
-                <div className="feature-row">
-                  <CheckCircle2 size={18} color="#10b981" />
-                  <span>Prescrição de exercícios para casa no celular do paciente</span>
-                </div>
-                <div className="feature-row">
-                  <CheckCircle2 size={18} color="#10b981" />
-                  <span>Disparo de lembretes e confirmações via WhatsApp</span>
-                </div>
-              </div>
-
-              {/* Selo de Segurança e Confiabilidade */}
-              <div className="showcase-trust-badge">
-                <ShieldCheck size={16} color="#6ee7b7" />
-                <span>Ambiente protegido com criptografia e prontuário sigiloso</span>
-              </div>
-            </div>
-
-            <div className="showcase-image-wrapper">
-              <Image
-                src="/images/pilates_reformer_banner.jpg"
-                alt="Estúdio Ketllen Souza Fisioterapia Studio"
-                width={800}
-                height={600}
-                className="showcase-bg-image"
-                priority
-              />
-            </div>
-          </div>
-        </div>
+        {/* Rodapé da Coluna Direita */}
+        <footer className="lovable-form-footer">
+          <span className="lovable-footer-copy">© 2026 Ketllen Souza Fisioterapia</span>
+          <span className="lovable-footer-motto">Cuidado em cada movimento</span>
+        </footer>
       </div>
     </div>
   );

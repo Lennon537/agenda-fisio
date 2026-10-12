@@ -3692,4 +3692,663 @@ body {
   }
 }
 
+/* ==========================================================================
+   TELA DE LOGIN PIXEL-PERFECT (ESTILO EXACTO DA IMAGEM)
+   ========================================================================== */
+
+.lovable-login-root {
+  display: grid;
+  grid-template-columns: 1.05fr 0.95fr;
+  min-height: 100vh;
+  min-height: 100dvh;
+  background: #07120e;
+  color: #ffffff;
+  font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
+  overflow-x: hidden;
+}
+
+@media (max-width: 1024px) {
+  .lovable-login-root {
+    grid-template-columns: 1fr;
+  }
+  .lovable-hero-col {
+    display: none !important;
+  }
+  .lovable-form-col {
+    padding: 24px 20px !important;
+  }
+}
+
+/* COLUNA ESQUERDA (HERO) */
+.lovable-hero-col {
+  position: relative;
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 48px 56px;
+  overflow: hidden;
+}
+
+.lovable-hero-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+.lovable-hero-img {
+  object-fit: cover;
+  object-position: center;
+}
+
+.lovable-hero-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background: linear-gradient(
+    180deg,
+    rgba(6, 20, 15, 0.72) 0%,
+    rgba(6, 20, 15, 0.2) 28%,
+    rgba(6, 20, 15, 0.3) 50%,
+    rgba(6, 20, 15, 0.92) 85%,
+    rgba(6, 20, 15, 0.98) 100%
+  );
+}
+
+.lovable-hero-top {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.lovable-brand-logo-circle {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(52, 211, 153, 0.45);
+  background: rgba(6, 28, 20, 0.55);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #34d399;
+}
+
+.lovable-leaf-svg {
+  color: #34d399;
+  stroke-width: 1.8px;
+}
+
+.lovable-brand-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.lovable-brand-name {
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #ffffff;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+
+.lovable-brand-sub {
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  color: #a7f3d0;
+  text-transform: uppercase;
+  margin-top: 3px;
+}
+
+.lovable-hero-bottom {
+  position: relative;
+  z-index: 3;
+  max-width: 520px;
+}
+
+.lovable-hero-kicker {
+  display: inline-block;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: #34d399;
+  margin-bottom: 12px;
+}
+
+.lovable-hero-title {
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-size: 3.1rem;
+  font-weight: 800;
+  color: #ffffff;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  margin: 0 0 16px;
+}
+
+.lovable-hero-sub {
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.85);
+  line-height: 1.5;
+  font-weight: 400;
+  margin: 0 0 24px;
+}
+
+.lovable-hero-footer-divider {
+  padding-top: 18px;
+  border-top: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.lovable-hero-quote-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.84rem;
+  color: rgba(255, 255, 255, 0.78);
+  font-weight: 400;
+}
+
+.lovable-heart-svg {
+  color: #34d399;
+  stroke-width: 1.8px;
+}
+
+/* COLUNA DIREITA (FORMULÁRIO) */
+.lovable-form-col {
+  background: #07120e;
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 36px 48px;
+  position: relative;
+  z-index: 3;
+}
+
+.lovable-form-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.lovable-role-switch {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.lovable-role-tab {
+  background: none;
+  border: none;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: #64748b;
+  cursor: pointer;
+  text-transform: uppercase;
+  transition: color 0.2s;
+  padding: 4px 0;
+}
+
+.lovable-role-tab:hover {
+  color: #94a3b8;
+}
+
+.lovable-role-tab.active {
+  color: #cbd5e1;
+}
+
+.lovable-role-tab.admin-tab.active {
+  color: #38bdf8;
+}
+
+.lovable-role-divider {
+  color: #334155;
+  font-size: 0.7rem;
+}
+
+.lovable-secure-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.76rem;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.lovable-shield-icon {
+  color: #34d399;
+  stroke-width: 1.8px;
+}
+
+/* CENTRO DO FORMULÁRIO */
+.lovable-form-center {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 390px;
+  margin: 0 auto;
+  padding: 24px 0;
+}
+
+.lovable-leaf-badge {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: #092318;
+  border: 1px solid rgba(52, 211, 153, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 20px rgba(5, 150, 105, 0.15);
+}
+
+.lovable-center-leaf {
+  color: #34d399;
+  stroke-width: 1.8px;
+}
+
+.lovable-form-box {
+  width: 100%;
+}
+
+.lovable-header-text {
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.lovable-kicker-tag {
+  display: inline-block;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #34d399;
+  margin-bottom: 8px;
+}
+
+.lovable-kicker-tag.admin-kicker {
+  color: #38bdf8;
+}
+
+.lovable-main-title {
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-size: 1.95rem;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: -0.02em;
+  margin: 0 0 6px;
+  line-height: 1.2;
+}
+
+.lovable-main-sub {
+  font-size: 0.86rem;
+  color: #94a3b8;
+  line-height: 1.45;
+  margin: 0;
+}
+
+.lovable-main-sub strong {
+  color: #ffffff;
+}
+
+.lovable-form-body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+}
+
+.lovable-field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.lovable-field-label {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #e2e8f0;
+}
+
+.lovable-input-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #0f1f18;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 9px;
+  padding: 11px 14px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.lovable-input-wrapper:focus-within {
+  border-color: #34d399;
+  box-shadow: 0 0 0 3px rgba(52, 211, 153, 0.15);
+}
+
+.lovable-input-icon {
+  color: #64748b;
+  flex-shrink: 0;
+}
+
+.lovable-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #ffffff;
+  font-size: 0.88rem;
+  font-family: inherit;
+}
+
+.lovable-input::placeholder {
+  color: #475569;
+}
+
+.lovable-eye-btn {
+  background: none;
+  border: none;
+  color: #64748b;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px;
+  transition: color 0.2s;
+}
+
+.lovable-eye-btn:hover {
+  color: #cbd5e1;
+}
+
+/* CHECKBOX & ESQUECI MINHA SENHA */
+.lovable-options-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 2px;
+  font-size: 0.8rem;
+}
+
+.lovable-checkbox-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.lovable-checkbox-input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.lovable-custom-checkbox {
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  border: 1.5px solid #34d399;
+  background: #0f1f18;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.lovable-checkbox-input:checked + .lovable-custom-checkbox {
+  background: #1cd690;
+  border-color: #1cd690;
+}
+
+.lovable-check-icon {
+  color: #062b1b;
+  font-size: 11px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.lovable-checkbox-text {
+  color: #94a3b8;
+  font-size: 0.8rem;
+}
+
+.lovable-forgot-link {
+  background: none;
+  border: none;
+  color: #34d399;
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  padding: 0;
+}
+
+.lovable-forgot-link:hover {
+  text-decoration: underline;
+  opacity: 0.9;
+}
+
+/* BOTÃO PRINCIPAL */
+.lovable-submit-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: #1cd690;
+  color: #062b1b;
+  font-size: 0.92rem;
+  font-weight: 700;
+  padding: 13px 20px;
+  border-radius: 9px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-top: 8px;
+  box-shadow: 0 4px 18px rgba(28, 214, 144, 0.25);
+}
+
+.lovable-submit-btn:hover {
+  background: #25e29c;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 24px rgba(28, 214, 144, 0.35);
+}
+
+.lovable-submit-arrow {
+  stroke-width: 2.2px;
+}
+
+/* LINK DE CADASTRO */
+.lovable-signup-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 0.82rem;
+  margin-top: 8px;
+}
+
+.lovable-signup-text {
+  color: #94a3b8;
+}
+
+.lovable-signup-link {
+  background: none;
+  border: none;
+  color: #34d399;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  font-size: 0.82rem;
+  transition: opacity 0.2s;
+}
+
+.lovable-signup-link:hover {
+  text-decoration: underline;
+}
+
+/* PILULA DE FRASE COM CORAÇÃO */
+.lovable-quote-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 16px;
+  border-radius: 999px;
+  border: 1px solid rgba(52, 211, 153, 0.2);
+  background: rgba(11, 41, 29, 0.4);
+  color: #6ee7b7;
+  font-size: 0.74rem;
+  font-weight: 500;
+  margin-top: 32px;
+}
+
+.lovable-quote-heart {
+  color: #34d399;
+  stroke-width: 1.8px;
+}
+
+/* ATALHOS DISCRETOS DE TESTE */
+.lovable-quick-test-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 14px;
+  align-items: center;
+}
+
+.lovable-quick-demo-pill {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+  color: #94a3b8;
+  font-size: 0.72rem;
+  padding: 5px 12px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.lovable-quick-demo-pill:hover {
+  background: rgba(52, 211, 153, 0.12);
+  color: #34d399;
+  border-color: rgba(52, 211, 153, 0.3);
+}
+
+/* CARDS DO ADMINISTRADOR */
+.lovable-admin-switch-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.lovable-admin-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 9px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: #0f1f18;
+  color: #e2e8f0;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.2s;
+  position: relative;
+}
+
+.lovable-admin-card.active {
+  border-color: #34d399;
+  background: rgba(52, 211, 153, 0.08);
+  box-shadow: 0 0 0 2px rgba(52, 211, 153, 0.2);
+}
+
+.lovable-admin-card-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.lovable-admin-card-icon.dra-icon {
+  background: rgba(52, 211, 153, 0.15);
+  color: #34d399;
+}
+
+.lovable-admin-card-icon.webmaster-icon {
+  background: rgba(56, 189, 248, 0.15);
+  color: #38bdf8;
+}
+
+.lovable-admin-card-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+}
+
+.lovable-admin-card-text strong {
+  font-size: 0.76rem;
+  color: #ffffff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.lovable-admin-card-text span {
+  font-size: 0.65rem;
+  color: #94a3b8;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.lovable-admin-check {
+  color: #34d399;
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+/* RODAPÉ DIREITO */
+.lovable-form-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  font-size: 0.7rem;
+  color: #475569;
+}
+
+.lovable-footer-copy {
+  color: #475569;
+}
+
+.lovable-footer-motto {
+  color: #334155;
+}
+
+.fade-in-quick {
+  animation: fadeInQuick 0.2s ease-out forwards;
+}
+
 
