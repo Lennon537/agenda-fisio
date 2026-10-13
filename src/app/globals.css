@@ -4996,9 +4996,9 @@ body {
     display: flex !important;
     position: relative !important;
     min-height: 0 !important;
-    height: clamp(190px, 28vh, 235px) !important;
-    max-height: 240px !important;
-    padding: 14px 20px 12px !important;
+    height: clamp(155px, 22vh, 185px) !important;
+    max-height: 195px !important;
+    padding: 12px 18px 10px !important;
     justify-content: space-between !important;
     overflow: hidden !important;
     flex-shrink: 0 !important;
@@ -5023,8 +5023,8 @@ body {
   }
 
   .lovable-brand-logo-circle {
-    width: 36px !important;
-    height: 36px !important;
+    width: 34px !important;
+    height: 34px !important;
     border-radius: 50% !important;
     border: 1.5px solid #2ee59d !important;
     background: rgba(9, 34, 24, 0.7) !important;
@@ -5034,20 +5034,20 @@ body {
   }
 
   .lovable-leaf-svg {
-    width: 20px !important;
-    height: 20px !important;
+    width: 18px !important;
+    height: 18px !important;
     color: #2ee59d !important;
   }
 
   .lovable-brand-name {
-    font-size: 0.92rem !important;
+    font-size: 0.9rem !important;
     line-height: 1.15 !important;
     font-weight: 700 !important;
     color: #ffffff !important;
   }
 
   .lovable-brand-sub {
-    font-size: 0.54rem !important;
+    font-size: 0.52rem !important;
     letter-spacing: 0.16em !important;
     color: #9cb3a7 !important;
     font-weight: 600 !important;
@@ -5059,17 +5059,17 @@ body {
   }
 
   .lovable-hero-kicker {
-    font-size: 0.64rem !important;
+    font-size: 0.62rem !important;
     letter-spacing: 0.14em !important;
-    margin-bottom: 4px !important;
+    margin-bottom: 3px !important;
     display: block !important;
     color: #2ee59d !important;
     font-weight: 700 !important;
   }
 
   .lovable-hero-title {
-    font-size: clamp(1.45rem, 4.4vw, 1.75rem) !important;
-    line-height: 1.12 !important;
+    font-size: clamp(1.26rem, 3.8vw, 1.52rem) !important;
+    line-height: 1.15 !important;
     margin-bottom: 0 !important;
     letter-spacing: -0.025em !important;
     font-weight: 800 !important;
@@ -5080,26 +5080,36 @@ body {
     display: none !important;
   }
 
-  /* FORMULÁRIO COMPACTO LOGO ABAIXO DO BANNER NO MOBILE (ZERO SCROLLBAR) */
+  /* FORMULÁRIO COMPACTO LOGO ABAIXO DO BANNER NO MOBILE (ZERO OVERLAP E SCROLL SUAVE) */
   .lovable-form-col {
-    padding: 8px 20px 10px !important;
+    padding: 8px 18px max(10px, env(safe-area-inset-bottom)) !important;
     min-height: 0 !important;
-    height: calc(100dvh - clamp(190px, 28vh, 235px)) !important;
+    height: calc(100dvh - clamp(155px, 22vh, 185px)) !important;
     background: #07120e !important;
     flex: 1 !important;
     display: flex !important;
     flex-direction: column !important;
-    justify-content: space-between !important;
-    overflow: hidden !important;
+    justify-content: flex-start !important;
+    overflow-y: auto !important;
+    overscroll-behavior: contain !important;
+    -webkit-overflow-scrolling: touch !important;
+    scrollbar-width: none !important;
+  }
+
+  .lovable-form-col::-webkit-scrollbar {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
   }
 
   /* TOPBAR: ESPAÇO DO PACIENTE & AMBIENTE SEGURO (IDÊNTICO À IMAGEM) */
   .lovable-form-topbar {
-    margin-bottom: clamp(6px, 1.2vh, 12px) !important;
+    margin-bottom: clamp(4px, 1vh, 8px) !important;
     display: flex !important;
     align-items: center !important;
     justify-content: space-between !important;
     width: 100% !important;
+    flex-shrink: 0 !important;
   }
 
   .lovable-role-switch {
@@ -5147,30 +5157,31 @@ body {
     align-items: flex-start !important;
     text-align: left !important;
     justify-content: flex-start !important;
-    flex: 1 !important;
+    flex: 1 0 auto !important;
     min-height: 0 !important;
     padding: 0 !important;
     width: 100% !important;
   }
 
   .lovable-leaf-badge {
-    width: clamp(36px, 4.8vh, 42px) !important;
-    height: clamp(36px, 4.8vh, 42px) !important;
+    width: clamp(32px, 4vh, 38px) !important;
+    height: clamp(32px, 4vh, 38px) !important;
     border-radius: 50% !important;
     background: #0b2419 !important;
     border: 1.5px solid #1c4b36 !important;
     align-self: flex-start !important;
     margin-left: 0 !important;
-    margin-bottom: clamp(8px, 1.4vh, 14px) !important;
+    margin-bottom: clamp(6px, 1vh, 10px) !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
     box-shadow: 0 4px 16px rgba(11, 36, 25, 0.4) !important;
+    flex-shrink: 0 !important;
   }
 
   .lovable-center-leaf {
-    width: clamp(18px, 2.4vh, 22px) !important;
-    height: clamp(18px, 2.4vh, 22px) !important;
+    width: clamp(16px, 2vh, 20px) !important;
+    height: clamp(16px, 2vh, 20px) !important;
     color: #2ee59d !important;
   }
 
@@ -5179,15 +5190,16 @@ body {
   }
 
   .lovable-header-text {
-    margin-bottom: clamp(14px, 2.2vh, 20px) !important;
+    margin-bottom: clamp(8px, 1.4vh, 14px) !important;
     text-align: left !important;
     width: 100% !important;
+    flex-shrink: 0 !important;
   }
 
   .lovable-kicker-tag {
-    font-size: 0.65rem !important;
+    font-size: 0.62rem !important;
     letter-spacing: 0.12em !important;
-    margin-bottom: 5px !important;
+    margin-bottom: 3px !important;
     display: block !important;
     color: #2ee59d !important;
     font-weight: 700 !important;
@@ -5195,9 +5207,9 @@ body {
   }
 
   .lovable-main-title {
-    font-size: clamp(1.48rem, 4.5vw, 1.72rem) !important;
+    font-size: clamp(1.4rem, 4.2vw, 1.62rem) !important;
     line-height: 1.15 !important;
-    margin-bottom: 4px !important;
+    margin-bottom: 3px !important;
     letter-spacing: -0.025em !important;
     font-weight: 800 !important;
     color: #ffffff !important;
@@ -5205,8 +5217,8 @@ body {
   }
 
   .lovable-main-sub {
-    font-size: clamp(0.8rem, 2.2vw, 0.88rem) !important;
-    line-height: 1.35 !important;
+    font-size: clamp(0.78rem, 2.1vw, 0.85rem) !important;
+    line-height: 1.3 !important;
     color: #8a9e94 !important;
     text-align: left !important;
   }
@@ -5214,12 +5226,12 @@ body {
   .lovable-form-body {
     display: flex !important;
     flex-direction: column !important;
-    gap: clamp(10px, 1.6vh, 14px) !important;
+    gap: clamp(8px, 1.2vh, 11px) !important;
     width: 100% !important;
   }
 
   .lovable-form-body.register-form-body {
-    gap: clamp(7px, 1.1vh, 10px) !important;
+    gap: clamp(6px, 1vh, 8px) !important;
   }
 
   .lovable-dual-fields-row {
@@ -5231,21 +5243,21 @@ body {
   .lovable-field-group {
     display: flex !important;
     flex-direction: column !important;
-    gap: 5px !important;
+    gap: 4px !important;
     text-align: left !important;
   }
 
   .lovable-field-label {
-    font-size: 0.82rem !important;
+    font-size: 0.8rem !important;
     font-weight: 500 !important;
     color: #cbd5e1 !important;
     text-align: left !important;
   }
 
   .lovable-input-wrapper {
-    padding: 0 14px !important;
+    padding: 0 12px !important;
     border-radius: 11px !important;
-    height: clamp(46px, 5.8vh, 50px) !important;
+    height: clamp(42px, 5.2vh, 46px) !important;
     background: #0a1711 !important;
     border: 1px solid #162f22 !important;
     display: flex !important;
@@ -5284,8 +5296,8 @@ body {
   }
 
   .lovable-options-row {
-    margin-top: clamp(1px, 0.4vh, 4px) !important;
-    margin-bottom: clamp(1px, 0.4vh, 4px) !important;
+    margin-top: clamp(1px, 0.3vh, 3px) !important;
+    margin-bottom: clamp(1px, 0.3vh, 3px) !important;
     font-size: 0.78rem !important;
     display: flex !important;
     align-items: center !important;
@@ -5338,13 +5350,13 @@ body {
 
   .lovable-submit-btn {
     padding: 0 16px !important;
-    font-size: 0.94rem !important;
+    font-size: 0.92rem !important;
     font-weight: 700 !important;
-    height: clamp(48px, 6vh, 52px) !important;
+    height: clamp(44px, 5.4vh, 48px) !important;
     border-radius: 11px !important;
     background: #2ee59d !important;
     color: #062b1b !important;
-    margin-top: clamp(4px, 1vh, 8px) !important;
+    margin-top: clamp(4px, 0.8vh, 8px) !important;
     border: none !important;
     cursor: pointer !important;
     display: flex !important;
@@ -5352,6 +5364,7 @@ body {
     justify-content: center !important;
     gap: 8px !important;
     box-shadow: 0 4px 18px rgba(46, 229, 157, 0.25) !important;
+    flex-shrink: 0 !important;
   }
 
   .lovable-submit-arrow {
@@ -5361,13 +5374,15 @@ body {
   }
 
   .lovable-signup-row {
-    font-size: 0.8rem !important;
-    margin-top: clamp(14px, 2.4vh, 22px) !important;
+    font-size: 0.78rem !important;
+    margin-top: clamp(8px, 1.4vh, 14px) !important;
+    margin-bottom: 6px !important;
     text-align: center !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
     gap: 6px !important;
+    flex-shrink: 0 !important;
   }
 
   .lovable-signup-text {
@@ -5382,6 +5397,9 @@ body {
     border: none !important;
     padding: 0 !important;
     cursor: pointer !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 3px !important;
   }
 
   .lovable-quote-pill {
@@ -5411,27 +5429,34 @@ body {
 
   .lovable-form-footer {
     display: flex !important;
+    flex-direction: column !important;
     align-items: center !important;
     justify-content: center !important;
-    gap: 8px !important;
-    padding-top: 6px !important;
+    gap: 3px !important;
+    padding-top: 10px !important;
     padding-bottom: 4px !important;
-    font-size: 0.66rem !important;
+    font-size: 0.65rem !important;
     color: #4e6559 !important;
-    border-top: none !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.05) !important;
     text-align: center !important;
     margin-top: auto !important;
+    flex-shrink: 0 !important;
+    width: 100% !important;
   }
 
   .lovable-footer-copy {
     color: #4e6559 !important;
+    font-size: 0.65rem !important;
+    white-space: nowrap !important;
   }
 
   .lovable-footer-motto {
     color: #4e6559 !important;
+    font-size: 0.62rem !important;
     display: inline-flex !important;
     align-items: center !important;
     gap: 4px !important;
+    white-space: nowrap !important;
   }
 
   .lovable-footer-leaf {
