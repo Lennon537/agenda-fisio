@@ -22,6 +22,7 @@ import {
 } from 'lucide-react';
 import { CareType, BlockedSlot, ClinicReview } from '@/types';
 import { CLINIC_INFO, TIME_SLOTS } from '@/data/clinicData';
+import { Modal } from '@/components/Modal';
 
 interface ScheduleViewProps {
   onOpenBookingModal: (careType: CareType, dateIso: string, time: string) => void;
@@ -522,138 +523,122 @@ export const ScheduleView: React.FC<ScheduleViewProps> = ({
       </footer>
 
       {/* =========================================================
-          MODAL: DEIXAR AVALIAÇÃO DE PACIENTE
+          MODAL: DEIXAR AVALIAÇÃO DE PACIENTE (UNIFICADO & RESPONSIVO)
           ========================================================= */}
-      {isReviewModalOpen && (
-        <div className="modal-backdrop-login" onClick={() => setIsReviewModalOpen(false)}>
-          <div className="review-modal-card" onClick={(e) => e.stopPropagation()}>
-            <button
-              type="button"
-              className="login-close-btn"
-              onClick={() => setIsReviewModalOpen(false)}
-            >
-              <X size={18} />
-            </button>
+      <Modal
+        isOpen={isReviewModalOpen}
+        onClose={() => setIsReviewModalOpen(false)}
+        maxWidth="lg"
+        headerIcon={<Star size={20} fill="#d97706" color="#d97706" />}
+        title="Compartilhe sua Experiência"
+        subtitle="Sua avaliação ajuda novos pacientes a conhecerem nosso cuidado"
+        closeButtonAriaLabel="Fechar janela de avaliação"
+      >
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (!revName.trim() || !revComment.trim()) return;
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <div className="brand-logo-circle" style={{ background: '#fef3c7', color: '#d97706' }}>
-                <Star size={20} fill="#d97706" />
-              </div>
-              <div>
-                <h3 className="section-title" style={{ margin: 0 }}>Compartilhe sua Experiência</h3>
-                <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', margin: 0 }}>
-                  Sua opinião ajuda outros pacientes a conhecerem nosso trabalho.
-                </p>
-              </div>
+            const newRev: ClinicReview = {
+              id: `REV-${Date.now()}`,
+              patientName: revName.trim(),
+              rating: revRating,
+              careType: revCare,
+              comment: revComment.trim(),
+              tags: [revTag, 'Atendimento Humanizado'],
+              date: new Date().toLocaleDateString('pt-BR'),
+              verified: true,
+            };
+
+            if (onAddReview) {
+              onAddReview(newRev);
+            }
+            setIsReviewModalOpen(false);
+            setRevComment('');
+          }}
+          style={{ display: 'flex', flexDirection: 'column', gap: 14 }}
+        >
+          {/* Avaliação em Estrelas */}
+          <div>
+            <label className="input-label">Sua Nota:</label>
+            <div className="star-rating-selector">
+              {[1, 2, 3, 4, 5].map((starVal) => (
+                <button
+                  key={starVal}
+                  type="button"
+                  className="star-interactive-btn"
+                  onClick={() => setRevRating(starVal)}
+                >
+                  <Star
+                    size={28}
+                    fill={starVal <= revRating ? '#f59e0b' : 'none'}
+                    color={starVal <= revRating ? '#f59e0b' : '#cbd5e1'}
+                  />
+                </button>
+              ))}
+              <span style={{ fontSize: '0.9rem', fontWeight: 700, marginLeft: 8, alignSelf: 'center' }}>
+                {revRating === 5 ? '⭐ Excelente (5/5)' : revRating === 4 ? 'Muito Bom (4/5)' : `${revRating} estrelas`}
+              </span>
             </div>
-
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                if (!revName.trim() || !revComment.trim()) return;
-
-                const newRev: ClinicReview = {
-                  id: `REV-${Date.now()}`,
-                  patientName: revName.trim(),
-                  rating: revRating,
-                  careType: revCare,
-                  comment: revComment.trim(),
-                  tags: [revTag, 'Atendimento Humanizado'],
-                  date: new Date().toLocaleDateString('pt-BR'),
-                  verified: true,
-                };
-
-                if (onAddReview) {
-                  onAddReview(newRev);
-                }
-                setIsReviewModalOpen(false);
-                setRevComment('');
-              }}
-              style={{ display: 'flex', flexDirection: 'column', gap: 14 }}
-            >
-              {/* Avaliação em Estrelas */}
-              <div>
-                <label className="input-label">Sua Nota:</label>
-                <div className="star-rating-selector">
-                  {[1, 2, 3, 4, 5].map((starVal) => (
-                    <button
-                      key={starVal}
-                      type="button"
-                      className="star-interactive-btn"
-                      onClick={() => setRevRating(starVal)}
-                    >
-                      <Star
-                        size={28}
-                        fill={starVal <= revRating ? '#f59e0b' : 'none'}
-                        color={starVal <= revRating ? '#f59e0b' : '#cbd5e1'}
-                      />
-                    </button>
-                  ))}
-                  <span style={{ fontSize: '0.9rem', fontWeight: 700, marginLeft: 8, alignSelf: 'center' }}>
-                    {revRating === 5 ? '⭐ Excelente (5/5)' : revRating === 4 ? 'Muito Bom (4/5)' : `${revRating} estrelas`}
-                  </span>
-                </div>
-              </div>
-
-              <div className="form-group">
-                <label className="input-label">Seu Nome:</label>
-                <input
-                  type="text"
-                  className="form-input"
-                  value={revName}
-                  onChange={(e) => setRevName(e.target.value)}
-                  placeholder="Nome que será exibido"
-                  required
-                />
-              </div>
-
-              <div className="form-row">
-                <div className="form-group flex-1">
-                  <label className="input-label">Especialidade Realizada:</label>
-                  <select
-                    className="form-select"
-                    value={revCare}
-                    onChange={(e) => setRevCare(e.target.value as any)}
-                  >
-                    <option value="fisioterapia">Fisioterapia</option>
-                    <option value="pilates">Pilates</option>
-                  </select>
-                </div>
-                <div className="form-group flex-1">
-                  <label className="input-label">Destaque Principal:</label>
-                  <select
-                    className="form-select"
-                    value={revTag}
-                    onChange={(e) => setRevTag(e.target.value)}
-                  >
-                    <option value="Alívio Imediato da Dor">Alívio Imediato da Dor</option>
-                    <option value="Pilates em Aparelhos">Pilates em Aparelhos</option>
-                    <option value="Atendimento Humanizado">Atendimento Humanizado</option>
-                    <option value="Exercícios em Casa">Exercícios em Casa</option>
-                    <option value="Pontualidade & Estrutura">Pontualidade & Estrutura</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className="form-group">
-                <label className="input-label">Seu Depoimento:</label>
-                <textarea
-                  className="form-textarea"
-                  rows={3}
-                  placeholder="Como foi o seu atendimento com a Dra. Ketllen e os resultados obtidos..."
-                  value={revComment}
-                  onChange={(e) => setRevComment(e.target.value)}
-                  required
-                />
-              </div>
-
-              <button type="submit" className="btn-confirm-alloc" style={{ marginTop: 6 }}>
-                Enviar Avaliação
-              </button>
-            </form>
           </div>
-        </div>
-      )}
+
+          <div className="form-group">
+            <label className="input-label">Seu Nome:</label>
+            <input
+              type="text"
+              className="form-input"
+              value={revName}
+              onChange={(e) => setRevName(e.target.value)}
+              placeholder="Nome que será exibido"
+              required
+            />
+          </div>
+
+          <div className="form-row">
+            <div className="form-group flex-1">
+              <label className="input-label">Especialidade Realizada:</label>
+              <select
+                className="form-select"
+                value={revCare}
+                onChange={(e) => setRevCare(e.target.value as any)}
+              >
+                <option value="fisioterapia">Fisioterapia</option>
+                <option value="pilates">Pilates</option>
+              </select>
+            </div>
+            <div className="form-group flex-1">
+              <label className="input-label">Destaque Principal:</label>
+              <select
+                className="form-select"
+                value={revTag}
+                onChange={(e) => setRevTag(e.target.value)}
+              >
+                <option value="Alívio Imediato da Dor">Alívio Imediato da Dor</option>
+                <option value="Pilates em Aparelhos">Pilates em Aparelhos</option>
+                <option value="Atendimento Humanizado">Atendimento Humanizado</option>
+                <option value="Exercícios em Casa">Exercícios em Casa</option>
+                <option value="Pontualidade & Estrutura">Pontualidade & Estrutura</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="form-group">
+            <label className="input-label">Seu Depoimento:</label>
+            <textarea
+              className="form-textarea"
+              rows={3}
+              placeholder="Como foi o seu atendimento com a Dra. Ketllen e os resultados obtidos..."
+              value={revComment}
+              onChange={(e) => setRevComment(e.target.value)}
+              required
+            />
+          </div>
+
+          <button type="submit" className="btn-confirm-alloc" style={{ marginTop: 6 }}>
+            Enviar Avaliação
+          </button>
+        </form>
+      </Modal>
     </div>
   );
 };

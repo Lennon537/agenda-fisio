@@ -28,6 +28,7 @@ import {
   openWhatsAppDirect,
   WhatsAppSendMode
 } from '@/utils/calendar';
+import { Modal } from '@/components/Modal';
 
 interface MyAppointmentsViewProps {
   appointments: ScheduledAppointment[];
@@ -339,78 +340,21 @@ export const MyAppointmentsView: React.FC<MyAppointmentsViewProps> = ({
         </div>
       )}
 
-      {/* MODAL DE DEMONSTRAÇÃO VISUAL DO EXERCÍCIO */}
+      {/* MODAL DE DEMONSTRAÇÃO VISUAL DO EXERCÍCIO (UNIFICADO & RESPONSIVO) */}
       {activeVisualExercise && activeVisualExercise.visualGuide && (
-        <div className="modal-backdrop-login" onClick={() => setActiveVisualExercise(null)}>
-          <div className="exercise-visual-modal-sheet" onClick={(e) => e.stopPropagation()}>
-            <button
-              type="button"
-              className="login-close-btn"
-              onClick={() => setActiveVisualExercise(null)}
-              aria-label="Fechar Guia"
-            >
-              <X size={18} />
-            </button>
-
-            <div className="ex-modal-header">
-              <div className="brand-logo-circle" style={{ background: '#ecfdf5', color: '#047857' }}>
-                <Activity size={20} />
-              </div>
-              <div>
-                <span className="ex-modal-tag">GUIA POSTURAL OFICIAL DA DRA. KETLLEN</span>
-                <h3 className="ex-modal-title">{activeVisualExercise.title}</h3>
-                <span className="ex-modal-subtitle">{activeVisualExercise.visualGuide.badge}</span>
-              </div>
-            </div>
-
-            {/* Painel de Foco Muscular e Meta */}
-            <div className="ex-focus-box">
-              <div className="focus-item">
-                <Target size={16} color="#059669" />
-                <div>
-                  <strong>Músculos Trabalhados:</strong>
-                  <p>{activeVisualExercise.visualGuide.targetMuscle}</p>
-                </div>
-              </div>
-              <div className="focus-item">
-                <Clock size={16} color="#059669" />
-                <div>
-                  <strong>Dose Diária:</strong>
-                  <p>{activeVisualExercise.repetitions} • {activeVisualExercise.frequency}</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Passo a Passo com Marcadores Visuais */}
-            <div className="ex-steps-section">
-              <h4 className="ex-steps-heading">Passo a Passo da Execução Correta:</h4>
-              <div className="ex-steps-timeline">
-                {activeVisualExercise.visualGuide.steps.map((step, idx) => (
-                  <div key={idx} className="ex-step-item">
-                    <div className="step-number-circle">{idx + 1}</div>
-                    <div className="step-text-content">
-                      <p>{step}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Dica Postural de Ouro da Dra. Ketllen */}
-            <div className="ex-posture-warning-card">
-              <div className="posture-icon-col">
-                <ShieldCheck size={20} color="#059669" />
-              </div>
-              <div className="posture-text-col">
-                <strong>Dica Postural da Dra. Ketllen:</strong>
-                <p>{activeVisualExercise.visualGuide.postureTips}</p>
-              </div>
-            </div>
-
-            {/* Botão de Concluir */}
+        <Modal
+          isOpen={Boolean(activeVisualExercise && activeVisualExercise.visualGuide)}
+          onClose={() => setActiveVisualExercise(null)}
+          maxWidth="xl"
+          headerIcon={<Activity size={20} color="#047857" />}
+          title={activeVisualExercise.title}
+          subtitle={activeVisualExercise.visualGuide.badge || 'Guia Postural Oficial da Dra. Ketllen'}
+          closeButtonAriaLabel="Fechar guia postural"
+          footer={
             <button
               type="button"
               className="btn-finish-modal"
+              style={{ width: '100%', margin: 0 }}
               onClick={() => {
                 handleToggleComplete(activeVisualExercise.id);
                 setActiveVisualExercise(null);
@@ -419,8 +363,52 @@ export const MyAppointmentsView: React.FC<MyAppointmentsViewProps> = ({
               <CheckCircle2 size={16} />
               <span>Concluir e Salvar no Meu Histórico</span>
             </button>
+          }
+        >
+          {/* Painel de Foco Muscular e Meta */}
+          <div className="ex-focus-box">
+            <div className="focus-item">
+              <Target size={16} color="#059669" />
+              <div>
+                <strong>Músculos Trabalhados:</strong>
+                <p>{activeVisualExercise.visualGuide.targetMuscle}</p>
+              </div>
+            </div>
+            <div className="focus-item">
+              <Clock size={16} color="#059669" />
+              <div>
+                <strong>Dose Diária:</strong>
+                <p>{activeVisualExercise.repetitions} • {activeVisualExercise.frequency}</p>
+              </div>
+            </div>
           </div>
-        </div>
+
+          {/* Passo a Passo com Marcadores Visuais */}
+          <div className="ex-steps-section" style={{ marginTop: 14 }}>
+            <h4 className="ex-steps-heading">Passo a Passo da Execução Correta:</h4>
+            <div className="ex-steps-timeline">
+              {activeVisualExercise.visualGuide.steps.map((step, idx) => (
+                <div key={idx} className="ex-step-item">
+                  <div className="step-number-circle">{idx + 1}</div>
+                  <div className="step-text-content">
+                    <p>{step}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Dica Postural de Ouro da Dra. Ketllen */}
+          <div className="ex-posture-warning-card" style={{ marginTop: 14 }}>
+            <div className="posture-icon-col">
+              <ShieldCheck size={20} color="#059669" />
+            </div>
+            <div className="posture-text-col">
+              <strong>Dica Postural da Dra. Ketllen:</strong>
+              <p>{activeVisualExercise.visualGuide.postureTips}</p>
+            </div>
+          </div>
+        </Modal>
       )}
     </div>
   );

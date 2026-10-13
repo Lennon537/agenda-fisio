@@ -40,6 +40,7 @@ import {
   generateGoogleCalendarUrl,
   generateWhatsAppReminderUrl
 } from '@/utils/calendar';
+import { Modal } from '@/components/Modal';
 
 interface DraDashboardViewProps {
   appointments: ScheduledAppointment[];
@@ -1097,232 +1098,230 @@ export const DraDashboardView: React.FC<DraDashboardViewProps> = ({
       )}
 
       {/* ========================================================
-          MODAL: ALOCAR ENCAIXE NA AGENDA
+          MODAL: ALOCAR ENCAIXE NA AGENDA (UNIFICADO & RESPONSIVO)
           ======================================================== */}
-      {allocatingEncaixe && (
-        <div className="modal-backdrop-login" onClick={() => setAllocatingEncaixe(null)}>
-          <div className="allocation-modal-card" onClick={(e) => e.stopPropagation()}>
-            <div className="alloc-header">
-              <h3>Alocar Encaixe na Agenda</h3>
-              <p>
-                Paciente: <strong>{allocatingEncaixe.patientName}</strong> ({allocatingEncaixe.careType})
-              </p>
+      <Modal
+        isOpen={Boolean(allocatingEncaixe)}
+        onClose={() => setAllocatingEncaixe(null)}
+        maxWidth="md"
+        headerIcon={<CalendarPlus size={20} color="#059669" />}
+        title="Alocar Encaixe na Agenda"
+        subtitle={
+          allocatingEncaixe
+            ? `Paciente: ${allocatingEncaixe.patientName} (${allocatingEncaixe.careType})`
+            : undefined
+        }
+        closeButtonAriaLabel="Fechar alocação de encaixe"
+      >
+        {allocatingEncaixe && (
+          <div className="alloc-form-body">
+            <div className="form-group">
+              <label className="input-label">Data do Encaixe:</label>
+              <input
+                type="date"
+                className="form-input"
+                value={allocatedDate}
+                onChange={(e) => setAllocatedDate(e.target.value)}
+              />
             </div>
 
-            <div className="alloc-form-body">
-              <div className="form-group">
-                <label className="input-label">Data do Encaixe:</label>
-                <input
-                  type="date"
-                  className="form-input"
-                  value={allocatedDate}
-                  onChange={(e) => setAllocatedDate(e.target.value)}
-                />
-              </div>
+            <div className="form-group">
+              <label className="input-label">Horário Confirmado:</label>
+              <select
+                className="form-select"
+                value={allocatedTime}
+                onChange={(e) => setAllocatedTime(e.target.value)}
+              >
+                <option value="08:00">08:00 (Manhã)</option>
+                <option value="09:00">09:00 (Manhã)</option>
+                <option value="10:00">10:00 (Manhã)</option>
+                <option value="11:00">11:00 (Manhã)</option>
+                <option value="11:30">11:30 (Manhã)</option>
+                <option value="14:00">14:00 (Tarde)</option>
+                <option value="15:00">15:00 (Tarde)</option>
+                <option value="16:00">16:00 (Tarde)</option>
+              </select>
+            </div>
 
-              <div className="form-group">
-                <label className="input-label">Horário Confirmado:</label>
-                <select
-                  className="form-select"
-                  value={allocatedTime}
-                  onChange={(e) => setAllocatedTime(e.target.value)}
-                >
-                  <option value="08:00">08:00 (Manhã)</option>
-                  <option value="09:00">09:00 (Manhã)</option>
-                  <option value="10:00">10:00 (Manhã)</option>
-                  <option value="11:00">11:00 (Manhã)</option>
-                  <option value="11:30">11:30 (Manhã)</option>
-                  <option value="14:00">14:00 (Tarde)</option>
-                  <option value="15:00">15:00 (Tarde)</option>
-                  <option value="16:00">16:00 (Tarde)</option>
-                </select>
-              </div>
+            <div className="alloc-notice">
+              Ao confirmar, o horário será inserido na agenda e uma mensagem no WhatsApp será aberta
+              para avisar o paciente com 1 clique!
+            </div>
 
-              <div className="alloc-notice">
-                Ao confirmar, o horário será inserido na agenda e uma mensagem no WhatsApp será aberta
-                para avisar o paciente com 1 clique!
-              </div>
-
-              <div className="alloc-actions-row">
-                <button
-                  type="button"
-                  className="btn-confirm-alloc"
-                  onClick={handleConfirmAllocation}
-                >
-                  Confirmar Encaixe & Notificar Paciente
-                </button>
-                <button
-                  type="button"
-                  className="btn-cancel-flat"
-                  onClick={() => setAllocatingEncaixe(null)}
-                >
-                  Cancelar
-                </button>
-              </div>
+            <div className="alloc-actions-row">
+              <button
+                type="button"
+                className="btn-confirm-alloc"
+                onClick={handleConfirmAllocation}
+              >
+                Confirmar Encaixe & Notificar Paciente
+              </button>
+              <button
+                type="button"
+                className="btn-cancel-flat"
+                onClick={() => setAllocatingEncaixe(null)}
+              >
+                Cancelar
+              </button>
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </Modal>
 
       {/* ========================================================
           MODAL DE EXPORTAÇÃO DE PRONTUÁRIO OFICIAL (TIMBRADO / PDF)
           ======================================================== */}
       {isExportingRecord && currentRecord && (
-        <div className="print-medical-modal-backdrop" onClick={() => setIsExportingRecord(false)}>
-          <div className="print-medical-modal-card" onClick={(e) => e.stopPropagation()}>
-            <div className="print-actions-toolbar">
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                <Printer size={20} color="#34d399" />
-                <strong>Prontuário Timbrado Oficial • {currentRecord.patientName}</strong>
+        <Modal
+          isOpen={Boolean(isExportingRecord && currentRecord)}
+          onClose={() => setIsExportingRecord(false)}
+          maxWidth="print"
+          headerIcon={<Printer size={20} color="#059669" />}
+          title={`Prontuário Timbrado Oficial • ${currentRecord.patientName}`}
+          subtitle="Documento clínico oficial com CREFITO e histórico terapêutico"
+          headerExtra={
+            <button
+              type="button"
+              className="btn-print-official"
+              onClick={() => window.print()}
+              style={{ marginLeft: 'auto', marginRight: 8 }}
+            >
+              <Printer size={16} />
+              <span>Imprimir / Salvar em PDF</span>
+            </button>
+          }
+          closeButtonAriaLabel="Fechar prontuário oficial"
+          contentPadding={false}
+        >
+          <div className="official-timbrado-sheet" id="prontuario-timbrado">
+            {/* Cabeçalho Oficial com CREFITO */}
+            <div className="timbrado-header">
+              <div className="timbrado-brand-block">
+                <h1>CLÍNICA KETLLEN SOUZA</h1>
+                <p>FISIOTERAPIA & PILATES CLÍNICO</p>
+                <span style={{ fontSize: '0.72rem', color: '#475569' }}>
+                  Reabilitação Traumato-Ortopédica, Cinesiologia & Reeducação Postural
+                </span>
               </div>
-              <div style={{ display: 'flex', gap: 10 }}>
-                <button
-                  type="button"
-                  className="btn-print-official"
-                  onClick={() => window.print()}
-                >
-                  <Printer size={16} />
-                  <span>Imprimir / Salvar em PDF</span>
-                </button>
-                <button
-                  type="button"
-                  className="btn-close-print"
-                  onClick={() => setIsExportingRecord(false)}
-                >
-                  Fechar
-                </button>
+              <div className="timbrado-dra-info">
+                <strong>Dra. Ketllen Souza</strong>
+                <span>Fisioterapeuta • CREFITO-3 / 345892-F</span>
+                <div style={{ fontSize: '0.7rem', color: '#64748b', marginTop: 3 }}>
+                  Emitido em: {new Date().toLocaleDateString('pt-BR')} às {new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
+                </div>
               </div>
             </div>
 
-            <div className="official-timbrado-sheet" id="prontuario-timbrado">
-              {/* Cabeçalho Oficial com CREFITO */}
-              <div className="timbrado-header">
-                <div className="timbrado-brand-block">
-                  <h1>CLÍNICA KETLLEN SOUZA</h1>
-                  <p>FISIOTERAPIA & PILATES CLÍNICO</p>
-                  <span style={{ fontSize: '0.72rem', color: '#475569' }}>
-                    Reabilitação Traumato-Ortopédica, Cinesiologia & Reeducação Postural
-                  </span>
-                </div>
-                <div className="timbrado-dra-info">
-                  <strong>Dra. Ketllen Souza</strong>
-                  <span>Fisioterapeuta • CREFITO-3 / 345892-F</span>
-                  <div style={{ fontSize: '0.7rem', color: '#64748b', marginTop: 3 }}>
-                    Emitido em: {new Date().toLocaleDateString('pt-BR')} às {new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
-                  </div>
-                </div>
+            {/* Faixa de Identificação do Paciente */}
+            <div className="timbrado-patient-strip">
+              <div className="strip-item">
+                <span>Paciente</span>
+                <strong>{currentRecord.patientName}</strong>
               </div>
-
-              {/* Faixa de Identificação do Paciente */}
-              <div className="timbrado-patient-strip">
-                <div className="strip-item">
-                  <span>Paciente</span>
-                  <strong>{currentRecord.patientName}</strong>
-                </div>
-                <div className="strip-item">
-                  <span>Contato Telefônico</span>
-                  <strong>{currentRecord.phone}</strong>
-                </div>
-                <div className="strip-item">
-                  <span>Nº Prontuário</span>
-                  <strong>#{currentRecord.id}</strong>
-                </div>
+              <div className="strip-item">
+                <span>Contato Telefônico</span>
+                <strong>{currentRecord.phone}</strong>
               </div>
+              <div className="strip-item">
+                <span>Nº Prontuário</span>
+                <strong>#{currentRecord.id}</strong>
+              </div>
+            </div>
 
-              {/* Seção 1: Avaliação e Anamnese */}
+            {/* Seção 1: Avaliação e Anamnese */}
+            <div className="timbrado-section">
+              <h2 className="timbrado-section-title">1. Diagnóstico Clínico & Objetivos Terapêuticos</h2>
+              <div className="timbrado-field-row">
+                <span>Queixa Principal / Motivo da Consulta:</span>
+                <p>{currentRecord.mainComplaint}</p>
+              </div>
+              <div className="timbrado-field-row">
+                <span>Diagnóstico Cinesiológico-Funcional:</span>
+                <p>{currentRecord.clinicalDiagnosis}</p>
+              </div>
+              <div className="timbrado-field-row">
+                <span>Objetivos do Tratamento:</span>
+                <p>{currentRecord.therapeuticGoals}</p>
+              </div>
+            </div>
+
+            {/* Seção 2: Evoluções Clínicas Realizadas */}
+            <div className="timbrado-section">
+              <h2 className="timbrado-section-title">2. Histórico de Evolução Clínica Realizada</h2>
+              <table className="timbrado-table">
+                <thead>
+                  <tr>
+                    <th style={{ width: '80px' }}>Sessão</th>
+                    <th style={{ width: '100px' }}>Data</th>
+                    <th>Conduta Terapêutica Aplicada</th>
+                    <th style={{ width: '85px' }}>EVA Dor</th>
+                    <th>Observações Clínicas</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {currentRecord.evolutions.map((ev) => (
+                    <tr key={ev.id}>
+                      <td><strong>Sessão #{ev.sessionNumber}</strong></td>
+                      <td>{ev.date}</td>
+                      <td>{ev.conduct}</td>
+                      <td>
+                        <span style={{ fontWeight: 700, color: ev.painLevel <= 3 ? '#059669' : ev.painLevel <= 6 ? '#d97706' : '#dc2626' }}>
+                          {ev.painLevel}/10
+                        </span>
+                      </td>
+                      <td>{ev.observations || 'Sem queixas adicionais.'}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Seção 3: Prescrição Domiciliar / Exercícios */}
+            {currentRecord.homeExercises.length > 0 && (
               <div className="timbrado-section">
-                <h2 className="timbrado-section-title">1. Diagnóstico Clínico & Objetivos Terapêuticos</h2>
-                <div className="timbrado-field-row">
-                  <span>Queixa Principal / Motivo da Consulta:</span>
-                  <p>{currentRecord.mainComplaint}</p>
-                </div>
-                <div className="timbrado-field-row">
-                  <span>Diagnóstico Cinesiológico-Funcional:</span>
-                  <p>{currentRecord.clinicalDiagnosis}</p>
-                </div>
-                <div className="timbrado-field-row">
-                  <span>Objetivos do Tratamento:</span>
-                  <p>{currentRecord.therapeuticGoals}</p>
-                </div>
-              </div>
-
-              {/* Seção 2: Evoluções Clínicas Realizadas */}
-              <div className="timbrado-section">
-                <h2 className="timbrado-section-title">2. Histórico de Evolução Clínica Realizada</h2>
+                <h2 className="timbrado-section-title">3. Prescrições Domiciliares & Exercícios para Casa</h2>
                 <table className="timbrado-table">
                   <thead>
                     <tr>
-                      <th style={{ width: '80px' }}>Sessão</th>
-                      <th style={{ width: '100px' }}>Data</th>
-                      <th>Conduta Terapêutica Aplicada</th>
-                      <th style={{ width: '85px' }}>EVA Dor</th>
-                      <th>Observações Clínicas</th>
+                      <th>Exercício / Orientação</th>
+                      <th>Dose & Repetições</th>
+                      <th>Frequência</th>
+                      <th>Instruções e Recomendações</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {currentRecord.evolutions.map((ev) => (
-                      <tr key={ev.id}>
-                        <td><strong>Sessão #{ev.sessionNumber}</strong></td>
-                        <td>{ev.date}</td>
-                        <td>{ev.conduct}</td>
-                        <td>
-                          <span style={{ fontWeight: 700, color: ev.painLevel <= 3 ? '#059669' : ev.painLevel <= 6 ? '#d97706' : '#dc2626' }}>
-                            {ev.painLevel}/10
-                          </span>
-                        </td>
-                        <td>{ev.observations || 'Sem queixas adicionais.'}</td>
+                    {currentRecord.homeExercises.map((ex) => (
+                      <tr key={ex.id}>
+                        <td><strong>{ex.title}</strong></td>
+                        <td>{ex.repetitions}</td>
+                        <td>{ex.frequency}</td>
+                        <td>{ex.instructions}</td>
                       </tr>
                     ))}
                   </tbody>
                 </table>
               </div>
+            )}
 
-              {/* Seção 3: Prescrição Domiciliar / Exercícios */}
-              {currentRecord.homeExercises.length > 0 && (
-                <div className="timbrado-section">
-                  <h2 className="timbrado-section-title">3. Prescrições Domiciliares & Exercícios para Casa</h2>
-                  <table className="timbrado-table">
-                    <thead>
-                      <tr>
-                        <th>Exercício / Orientação</th>
-                        <th>Dose & Repetições</th>
-                        <th>Frequência</th>
-                        <th>Instruções e Recomendações</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {currentRecord.homeExercises.map((ex) => (
-                        <tr key={ex.id}>
-                          <td><strong>{ex.title}</strong></td>
-                          <td>{ex.repetitions}</td>
-                          <td>{ex.frequency}</td>
-                          <td>{ex.instructions}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              )}
+            {/* Carimbo e Assinatura */}
+            <div className="timbrado-signature-block">
+              <div className="signature-line" />
+              <span className="signature-name">Dra. Ketllen Souza</span>
+              <span className="signature-crefito">Fisioterapeuta Responsável • CREFITO-3 / 345892-F</span>
+              <span style={{ fontSize: '0.68rem', color: '#94a3b8', marginTop: 2 }}>
+                Ketllen Souza Fisioterapia & Pilates • São Paulo / SP
+              </span>
+            </div>
 
-              {/* Carimbo e Assinatura */}
-              <div className="timbrado-signature-block">
-                <div className="signature-line" />
-                <span className="signature-name">Dra. Ketllen Souza</span>
-                <span className="signature-crefito">Fisioterapeuta Responsável • CREFITO-3 / 345892-F</span>
-                <span style={{ fontSize: '0.68rem', color: '#94a3b8', marginTop: 2 }}>
-                  Ketllen Souza Fisioterapia & Pilates • São Paulo / SP
-                </span>
-              </div>
-
-              {/* Rodapé Legal */}
-              <div className="timbrado-footer-notice">
-                <span>Documento emitido eletronicamente via Sistema Clínico Ketllen Souza Fisioterapia.</span>
-                <span>Validade para fins de acompanhamento fisioterapêutico.</span>
-              </div>
+            {/* Rodapé Legal */}
+            <div className="timbrado-footer-notice">
+              <span>Documento emitido eletronicamente via Sistema Clínico Ketllen Souza Fisioterapia.</span>
+              <span>Validade para fins de acompanhamento fisioterapêutico.</span>
             </div>
           </div>
-        </div>
+        </Modal>
       )}
     </div>
   );
 };
+

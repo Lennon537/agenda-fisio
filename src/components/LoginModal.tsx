@@ -2,7 +2,6 @@
 
 import React, { useState } from 'react';
 import {
-  X,
   User,
   Phone,
   Mail,
@@ -19,6 +18,7 @@ import {
 } from 'lucide-react';
 import { CLINIC_INFO } from '@/data/clinicData';
 import { AdminType } from '@/types';
+import { Modal } from '@/components/Modal';
 
 interface LoginModalProps {
   isOpen: boolean;
@@ -83,188 +83,176 @@ export const LoginModal: React.FC<LoginModalProps> = ({
   };
 
   return (
-    <div className="modal-backdrop-login" onClick={onClose}>
-      <div className="login-modal-sheet" onClick={(e) => e.stopPropagation()}>
-        {/* Botão de Fechar */}
-        <button
-          type="button"
-          className="login-close-btn"
-          onClick={onClose}
-          aria-label="Fechar"
-        >
-          <X size={18} />
-        </button>
-
-        {/* Topo com Logo e Marca */}
-        <div className="login-modal-header">
-          <div className="brand-logo-circle login-logo-circle">
-            <Leaf size={24} className="brand-leaf-icon" />
-          </div>
-          <h2 className="login-title">Acessar ou Alternar Conta</h2>
-          <p className="login-subtitle">
-            {role === 'patient'
-              ? 'Área exclusiva para pacientes acompanharem seus agendamentos e prontuário.'
-              : 'Ambiente restrito exclusivo para os 2 administradores autorizados.'}
-          </p>
-        </div>
-
-        {/* Seletor de Perfil (Paciente ou Administrador) */}
-        <div className="login-segmented-tabs" style={{ marginBottom: 20 }}>
-          <button
-            type="button"
-            className={`login-segment-btn ${role === 'patient' ? 'active' : ''}`}
-            onClick={() => setRole('patient')}
-          >
-            <User size={15} />
-            <span>Sou Paciente</span>
-          </button>
-          <button
-            type="button"
-            className={`login-segment-btn ${role === 'admin' ? 'active' : ''}`}
-            onClick={() => setRole('admin')}
-          >
-            <ShieldCheck size={15} />
-            <span>Administrador</span>
-            <span className="login-admin-counter-pill">2 contas</span>
-          </button>
-        </div>
-
-        {/* Formulário de Login */}
-        <form onSubmit={handleSubmit} className="login-form">
-          {role === 'patient' ? (
-            <>
-              <div className="login-form-group">
-                <label className="login-label">WhatsApp ou E-mail</label>
-                <div className="login-input-wrapper">
-                  <Phone size={17} className="login-input-icon" />
-                  <input
-                    type="text"
-                    className="login-input"
-                    placeholder="Ex: (11) 98765-4321 ou e-mail"
-                    value={patientInput}
-                    onChange={(e) => setPatientInput(e.target.value)}
-                    required
-                  />
-                </div>
-              </div>
-
-              <div className="login-form-group">
-                <label className="login-label">Nome Completo (Opcional)</label>
-                <div className="login-input-wrapper">
-                  <User size={17} className="login-input-icon" />
-                  <input
-                    type="text"
-                    className="login-input"
-                    placeholder="Ex: Mariana Duarte"
-                    value={patientName}
-                    onChange={(e) => setPatientName(e.target.value)}
-                  />
-                </div>
-              </div>
-            </>
-          ) : (
-            <>
-              {/* Alerta de 2 Administradores */}
-              <div className="admin-security-alert" style={{ marginBottom: 14 }}>
-                <div className="admin-alert-icon">
-                  <ShieldCheck size={16} color="#059669" />
-                </div>
-                <div className="admin-alert-text">
-                  <strong>Acesso Restrito: 2 Administradores</strong>
-                  <span>Apenas a Dra. Ketllen Souza e o Webmaster (Lennon).</span>
-                </div>
-              </div>
-
-              {/* Seletor Visual dos 2 Administradores */}
-              <div className="admin-selector-wrapper" style={{ marginBottom: 14 }}>
-                <div className="admin-cards-grid">
-                  <button
-                    type="button"
-                    className={`admin-card-btn ${selectedAdmin === 'dra' ? 'active' : ''}`}
-                    onClick={() => setSelectedAdmin('dra')}
-                  >
-                    <div className="admin-card-avatar dra-avatar">
-                      <Stethoscope size={16} />
-                    </div>
-                    <div className="admin-card-info">
-                      <strong className="admin-card-name">Dra. Ketllen Souza</strong>
-                      <span className="admin-card-badge">Fisioterapeuta</span>
-                    </div>
-                    {selectedAdmin === 'dra' && (
-                      <div className="admin-card-check">
-                        <CheckCircle2 size={15} />
-                      </div>
-                    )}
-                  </button>
-
-                  <button
-                    type="button"
-                    className={`admin-card-btn ${selectedAdmin === 'webmaster' ? 'active' : ''}`}
-                    onClick={() => setSelectedAdmin('webmaster')}
-                  >
-                    <div className="admin-card-avatar webmaster-avatar">
-                      <Laptop size={16} />
-                    </div>
-                    <div className="admin-card-info">
-                      <strong className="admin-card-name">Lennon</strong>
-                      <span className="admin-card-badge">Webmaster</span>
-                    </div>
-                    {selectedAdmin === 'webmaster' && (
-                      <div className="admin-card-check">
-                        <CheckCircle2 size={15} />
-                      </div>
-                    )}
-                  </button>
-                </div>
-              </div>
-
-              <div className="login-form-group">
-                <div className="password-header-row">
-                  <label className="login-label">Senha do Administrador</label>
-                </div>
-                <div className="login-input-wrapper">
-                  <KeyRound size={17} className="login-input-icon" />
-                  <input
-                    type={showPassword ? 'text' : 'password'}
-                    className="login-input"
-                    placeholder="Digite a senha de administrador"
-                    value={adminPassword}
-                    onChange={(e) => setAdminPassword(e.target.value)}
-                    required
-                  />
-                  <button
-                    type="button"
-                    className="toggle-password-btn"
-                    onClick={() => setShowPassword(!showPassword)}
-                    tabIndex={-1}
-                  >
-                    {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-                  </button>
-                </div>
-              </div>
-            </>
-          )}
-
-          {/* Botão de Entrar */}
-          <button type="submit" className="btn-login-submit" style={{ marginTop: 14 }}>
-            <span>
-              {role === 'patient'
-                ? 'Entrar no Espaço do Paciente'
-                : selectedAdmin === 'dra'
-                ? 'Entrar no Painel da Dra. Ketllen'
-                : 'Entrar como Webmaster'}
-            </span>
-            <ArrowRight size={16} />
-          </button>
-        </form>
-
-        {/* Rodapé Acolhedor */}
-        <div className="login-modal-footer">
-          <p className="login-footer-motto">
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      maxWidth="md"
+      headerIcon={<Leaf size={22} className="brand-leaf-icon" />}
+      title="Acessar ou Alternar Conta"
+      subtitle={
+        role === 'patient'
+          ? 'Espaço exclusivo para acompanhamento de consultas'
+          : 'Acesso restrito para administradores autorizados'
+      }
+      closeButtonAriaLabel="Fechar janela de login"
+      footer={
+        <div style={{ textAlign: 'center', width: '100%' }}>
+          <p className="login-footer-motto" style={{ margin: 0 }}>
             <em>&quot;{CLINIC_INFO.motto}&quot;</em>
           </p>
         </div>
+      }
+    >
+      {/* Seletor de Perfil (Paciente ou Administrador) */}
+      <div className="login-segmented-tabs" style={{ marginBottom: 18 }}>
+        <button
+          type="button"
+          className={`login-segment-btn ${role === 'patient' ? 'active' : ''}`}
+          onClick={() => setRole('patient')}
+        >
+          <User size={15} />
+          <span>Sou Paciente</span>
+        </button>
+        <button
+          type="button"
+          className={`login-segment-btn ${role === 'admin' ? 'active' : ''}`}
+          onClick={() => setRole('admin')}
+        >
+          <ShieldCheck size={15} />
+          <span>Administrador</span>
+          <span className="login-admin-counter-pill">2 contas</span>
+        </button>
       </div>
-    </div>
+
+      {/* Formulário de Login */}
+      <form onSubmit={handleSubmit} className="login-form">
+        {role === 'patient' ? (
+          <>
+            <div className="login-form-group">
+              <label className="login-label">WhatsApp ou E-mail</label>
+              <div className="login-input-wrapper">
+                <Phone size={17} className="login-input-icon" />
+                <input
+                  type="text"
+                  className="login-input"
+                  placeholder="Ex: (11) 98765-4321 ou e-mail"
+                  value={patientInput}
+                  onChange={(e) => setPatientInput(e.target.value)}
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="login-form-group">
+              <label className="login-label">Nome Completo (Opcional)</label>
+              <div className="login-input-wrapper">
+                <User size={17} className="login-input-icon" />
+                <input
+                  type="text"
+                  className="login-input"
+                  placeholder="Ex: Mariana Duarte"
+                  value={patientName}
+                  onChange={(e) => setPatientName(e.target.value)}
+                />
+              </div>
+            </div>
+          </>
+        ) : (
+          <>
+            {/* Alerta de 2 Administradores */}
+            <div className="admin-security-alert" style={{ marginBottom: 14 }}>
+              <div className="admin-alert-icon">
+                <ShieldCheck size={16} color="#059669" />
+              </div>
+              <div className="admin-alert-text">
+                <strong>Acesso Restrito: 2 Administradores</strong>
+                <span>Apenas a Dra. Ketllen Souza e o Webmaster (Lennon).</span>
+              </div>
+            </div>
+
+            {/* Seletor Visual dos 2 Administradores */}
+            <div className="admin-selector-wrapper" style={{ marginBottom: 14 }}>
+              <div className="admin-cards-grid">
+                <button
+                  type="button"
+                  className={`admin-card-btn ${selectedAdmin === 'dra' ? 'active' : ''}`}
+                  onClick={() => setSelectedAdmin('dra')}
+                >
+                  <div className="admin-card-avatar dra-avatar">
+                    <Stethoscope size={16} />
+                  </div>
+                  <div className="admin-card-info">
+                    <strong className="admin-card-name">Dra. Ketllen Souza</strong>
+                    <span className="admin-card-badge">Fisioterapeuta</span>
+                  </div>
+                  {selectedAdmin === 'dra' && (
+                    <div className="admin-card-check">
+                      <CheckCircle2 size={15} />
+                    </div>
+                  )}
+                </button>
+
+                <button
+                  type="button"
+                  className={`admin-card-btn ${selectedAdmin === 'webmaster' ? 'active' : ''}`}
+                  onClick={() => setSelectedAdmin('webmaster')}
+                >
+                  <div className="admin-card-avatar webmaster-avatar">
+                    <Laptop size={16} />
+                  </div>
+                  <div className="admin-card-info">
+                    <strong className="admin-card-name">Lennon</strong>
+                    <span className="admin-card-badge">Webmaster</span>
+                  </div>
+                  {selectedAdmin === 'webmaster' && (
+                    <div className="admin-card-check">
+                      <CheckCircle2 size={15} />
+                    </div>
+                  )}
+                </button>
+              </div>
+            </div>
+
+            <div className="login-form-group">
+              <div className="password-header-row">
+                <label className="login-label">Senha do Administrador</label>
+              </div>
+              <div className="login-input-wrapper">
+                <KeyRound size={17} className="login-input-icon" />
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  className="login-input"
+                  placeholder="Digite a senha de administrador"
+                  value={adminPassword}
+                  onChange={(e) => setAdminPassword(e.target.value)}
+                  required
+                />
+                <button
+                  type="button"
+                  className="toggle-password-btn"
+                  onClick={() => setShowPassword(!showPassword)}
+                  tabIndex={-1}
+                  aria-label={showPassword ? 'Ocultar senha' : 'Exibir senha'}
+                >
+                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                </button>
+              </div>
+            </div>
+          </>
+        )}
+
+        {/* Botão de Entrar */}
+        <button type="submit" className="btn-login-submit" style={{ marginTop: 14 }}>
+          <span>
+            {role === 'patient'
+              ? 'Entrar no Espaço do Paciente'
+              : selectedAdmin === 'dra'
+              ? 'Entrar no Painel da Dra. Ketllen'
+              : 'Entrar como Webmaster'}
+          </span>
+          <ArrowRight size={16} />
+        </button>
+      </form>
+    </Modal>
   );
 };

@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect } from 'react';
 import {
-  X,
   Calendar,
   Clock,
   User,
@@ -25,6 +24,7 @@ import {
   WhatsAppSendMode,
   isMobileDevice
 } from '@/utils/calendar';
+import { Modal } from '@/components/Modal';
 
 interface BookingConfirmModalProps {
   isOpen: boolean;
@@ -166,260 +166,255 @@ export const BookingConfirmModal: React.FC<BookingConfirmModalProps> = ({
   };
 
   return (
-    <div className="modal-backdrop-login" onClick={handleCloseModal}>
-      <div className="login-modal-sheet" onClick={(e) => e.stopPropagation()}>
-        <button
-          type="button"
-          className="login-close-btn"
-          onClick={handleCloseModal}
-          aria-label="Fechar"
-        >
-          <X size={18} />
-        </button>
+    <Modal
+      isOpen={isOpen}
+      onClose={handleCloseModal}
+      maxWidth="lg"
+      headerIcon={
+        confirmedAppointment ? (
+          <CheckCircle2 size={22} color="#059669" />
+        ) : careType === 'fisioterapia' ? (
+          <Activity size={22} color="#047857" />
+        ) : (
+          <Leaf size={22} color="#047857" />
+        )
+      }
+      title={confirmedAppointment ? 'Sessão Solicitada!' : 'Confirmar Agendamento'}
+      subtitle={
+        confirmedAppointment
+          ? 'Horário pré-agendado com confirmação direta via WhatsApp'
+          : `${formatDateDisplay(dateIso)} às ${time} • Ketllen Souza Fisioterapia`
+      }
+      closeButtonAriaLabel="Fechar janela de agendamento"
+    >
+      {confirmedAppointment ? (
+        /* TELA DE SUCESSO COM GOOGLE AGENDA */
+        <div className="booking-success-view">
+          <div className="success-icon-badge">
+            <CheckCircle2 size={42} color="#059669" />
+          </div>
+          <h3 className="success-title">Tudo Pronto!</h3>
+          <p className="success-sub">
+            Seu agendamento foi registrado e o WhatsApp da clínica foi aberto para confirmação imediata.
+          </p>
 
-        {confirmedAppointment ? (
-          /* TELA DE SUCESSO COM GOOGLE AGENDA */
-          <div className="booking-success-view">
-            <div className="success-icon-badge">
-              <CheckCircle2 size={42} color="#059669" />
+          <div className="success-appointment-box">
+            <div className="success-row">
+              <span>Código:</span>
+              <strong>#{confirmedAppointment.id}</strong>
             </div>
-            <h2 className="success-title">Sessão Solicitada!</h2>
-            <p className="success-sub">
-              Seu agendamento foi registrado e o WhatsApp da clínica foi aberto para confirmação.
-            </p>
-
-            <div className="success-appointment-box">
-              <div className="success-row">
-                <span>Código:</span>
-                <strong>#{confirmedAppointment.id}</strong>
-              </div>
-              <div className="success-row">
-                <span>Data & Horário:</span>
-                <strong>{formatDateDisplay(confirmedAppointment.date)} às {confirmedAppointment.time}</strong>
-              </div>
-              <div className="success-row">
-                <span>Paciente:</span>
-                <strong>{confirmedAppointment.patientName}</strong>
-              </div>
-              <div className="success-row">
-                <span>Destinatário:</span>
-                <strong style={{ color: '#10b981' }}>Dra. Ketllen Souza ({CLINIC_INFO.draPhoneFormatted || CLINIC_INFO.phoneFormatted})</strong>
-              </div>
+            <div className="success-row">
+              <span>Data & Horário:</span>
+              <strong>{formatDateDisplay(confirmedAppointment.date)} às {confirmedAppointment.time}</strong>
             </div>
-
-            {/* Ações de Reenvio WhatsApp (App & Web) */}
-            <div className="success-wa-resend-block">
-              <span className="wa-resend-prompt">Deseja reenviar ou alternar o modo de envio?</span>
-              <div className="wa-resend-btn-group">
-                <button
-                  type="button"
-                  className="btn-wa-resend-item"
-                  onClick={() =>
-                    openWhatsAppDirect({
-                      phone: CLINIC_INFO.draPhone || CLINIC_INFO.phone,
-                      text: buildWhatsAppMessage(confirmedAppointment),
-                      mode: 'app',
-                    })
-                  }
-                  title="Abrir no aplicativo WhatsApp"
-                >
-                  <Smartphone size={15} />
-                  <span>Abrir no App</span>
-                </button>
-
-                <button
-                  type="button"
-                  className="btn-wa-resend-item"
-                  onClick={() =>
-                    openWhatsAppDirect({
-                      phone: CLINIC_INFO.draPhone || CLINIC_INFO.phone,
-                      text: buildWhatsAppMessage(confirmedAppointment),
-                      mode: 'web',
-                    })
-                  }
-                  title="Abrir no WhatsApp Web pelo navegador"
-                >
-                  <Globe size={15} />
-                  <span>WhatsApp Web</span>
-                </button>
-              </div>
+            <div className="success-row">
+              <span>Paciente:</span>
+              <strong>{confirmedAppointment.patientName}</strong>
             </div>
+            <div className="success-row">
+              <span>Destinatário:</span>
+              <strong style={{ color: '#10b981' }}>Dra. Ketllen Souza ({CLINIC_INFO.draPhoneFormatted || CLINIC_INFO.phoneFormatted})</strong>
+            </div>
+          </div>
 
-            {/* BOTÃO GOOGLE AGENDA (100% GRATUITO) */}
-            <div className="calendar-sync-actions">
+          {/* Ações de Reenvio WhatsApp (App & Web) */}
+          <div className="success-wa-resend-block">
+            <span className="wa-resend-prompt">Deseja reenviar ou alternar o modo de envio?</span>
+            <div className="wa-resend-btn-group">
               <button
                 type="button"
-                className="btn-add-gcal"
-                onClick={() => handleOpenGoogleCalendar(confirmedAppointment)}
+                className="btn-wa-resend-item"
+                onClick={() =>
+                  openWhatsAppDirect({
+                    phone: CLINIC_INFO.draPhone || CLINIC_INFO.phone,
+                    text: buildWhatsAppMessage(confirmedAppointment),
+                    mode: 'app',
+                  })
+                }
+                title="Abrir no aplicativo WhatsApp"
               >
-                <Calendar size={18} />
-                <span>Adicionar ao Google Agenda (Gratuito)</span>
+                <Smartphone size={15} />
+                <span>Abrir no App</span>
               </button>
 
               <button
                 type="button"
-                className="btn-finish-modal"
-                onClick={handleCloseModal}
+                className="btn-wa-resend-item"
+                onClick={() =>
+                  openWhatsAppDirect({
+                    phone: CLINIC_INFO.draPhone || CLINIC_INFO.phone,
+                    text: buildWhatsAppMessage(confirmedAppointment),
+                    mode: 'web',
+                  })
+                }
+                title="Abrir no WhatsApp Web pelo navegador"
               >
-                Concluir
+                <Globe size={15} />
+                <span>WhatsApp Web</span>
               </button>
             </div>
           </div>
-        ) : (
-          /* FORMULÁRIO DE DADOS DO PACIENTE */
-          <>
-            <div className="login-modal-header">
-              <div className="brand-logo-circle login-logo-circle">
-                {careType === 'fisioterapia' ? (
-                  <Activity size={24} color="#047857" />
-                ) : (
-                  <Leaf size={24} color="#047857" />
-                )}
-              </div>
-              <h2 className="login-title">Confirmar Solicitação de Sessão</h2>
-              <p className="login-subtitle">
-                Revise os detalhes e informe seus dados para reserva do horário na Ketllen Souza Fisioterapia.
-              </p>
+
+          {/* BOTÃO GOOGLE AGENDA (100% GRATUITO) */}
+          <div className="calendar-sync-actions">
+            <button
+              type="button"
+              className="btn-add-gcal"
+              onClick={() => handleOpenGoogleCalendar(confirmedAppointment)}
+            >
+              <Calendar size={18} />
+              <span>Adicionar ao Google Agenda (Gratuito)</span>
+            </button>
+
+            <button
+              type="button"
+              className="btn-finish-modal"
+              onClick={handleCloseModal}
+            >
+              Concluir
+            </button>
+          </div>
+        </div>
+      ) : (
+        /* FORMULÁRIO DE DADOS DO PACIENTE */
+        <>
+          {/* Resumo da Sessão Escolhida */}
+          <div className="booking-review-summary-card">
+            <div className="review-item-row">
+              <span className="review-label">CUIDADO</span>
+              <strong className="review-value" style={{ textTransform: 'capitalize' }}>
+                {careType}
+              </strong>
             </div>
-
-            {/* Resumo da Sessão Escolhida */}
-            <div className="booking-review-summary-card">
-              <div className="review-item-row">
-                <span className="review-label">CUIDADO</span>
-                <strong className="review-value" style={{ textTransform: 'capitalize' }}>
-                  {careType}
-                </strong>
-              </div>
-              <div className="review-item-row">
-                <span className="review-label">DATA & HORÁRIO</span>
-                <strong className="review-value" style={{ color: '#047857' }}>
-                  {formatDateDisplay(dateIso)} às {time}
-                </strong>
-              </div>
+            <div className="review-item-row">
+              <span className="review-label">DATA & HORÁRIO</span>
+              <strong className="review-value" style={{ color: '#047857' }}>
+                {formatDateDisplay(dateIso)} às {time}
+              </strong>
             </div>
+          </div>
 
-            {/* Formulário do Paciente */}
-            <form onSubmit={handleSubmit} className="login-form">
-              <div className="login-form-group">
-                <label className="login-label">Nome Completo do Paciente *</label>
-                <div className="login-input-wrapper">
-                  <User size={17} className="login-input-icon" />
-                  <input
-                    type="text"
-                    className="login-input"
-                    placeholder="Ex: Mariana Duarte"
-                    value={patientName}
-                    onChange={(e) => setPatientName(e.target.value)}
-                    required
-                  />
-                </div>
-              </div>
-
-              <div className="login-form-group">
-                <label className="login-label">WhatsApp para Confirmação *</label>
-                <div className="login-input-wrapper">
-                  <Phone size={17} className="login-input-icon" />
-                  <input
-                    type="tel"
-                    className="login-input"
-                    placeholder="(11) 99999-9999"
-                    value={phone}
-                    onChange={(e) => setPhone(formatPhone(e.target.value))}
-                    required
-                  />
-                </div>
-              </div>
-
-              <div className="login-form-group">
-                <label className="login-label">É sua primeira vez na clínica?</label>
-                <div className="first-time-radio-group">
-                  <button
-                    type="button"
-                    className={`first-time-pill ${isFirstTime === 'sim' ? 'active' : ''}`}
-                    onClick={() => setIsFirstTime('sim')}
-                  >
-                    Sim, primeira sessão
-                  </button>
-                  <button
-                    type="button"
-                    className={`first-time-pill ${isFirstTime === 'nao' ? 'active' : ''}`}
-                    onClick={() => setIsFirstTime('nao')}
-                  >
-                    Não, já sou paciente
-                  </button>
-                </div>
-              </div>
-
-              <div className="login-form-group">
-                <label className="login-label">Motivo, dor ou objetivo principal</label>
+          {/* Formulário do Paciente */}
+          <form onSubmit={handleSubmit} className="login-form">
+            <div className="login-form-group">
+              <label className="login-label">Nome Completo do Paciente *</label>
+              <div className="login-input-wrapper">
+                <User size={17} className="login-input-icon" />
                 <input
                   type="text"
                   className="login-input"
-                  style={{ paddingLeft: 14 }}
-                  placeholder="Ex: Dores lombares, reabilitação de joelho, pilates..."
-                  value={reason}
-                  onChange={(e) => setReason(e.target.value)}
+                  placeholder="Ex: Mariana Duarte"
+                  value={patientName}
+                  onChange={(e) => setPatientName(e.target.value)}
+                  required
                 />
               </div>
+            </div>
 
-              {/* SELETOR DE CANAL: APLICATIVO VS WHATSAPP WEB */}
-              <div className="wa-dispatch-selector-box">
-                <div className="wa-dispatch-header">
-                  <div className="wa-dispatch-title-row">
-                    <span className="wa-dispatch-label">Enviar diretamente para:</span>
-                    <span className="wa-dispatch-target-badge">
-                      <ShieldCheck size={13} />
-                      Dra. Ketllen Souza ({CLINIC_INFO.draPhoneFormatted || CLINIC_INFO.phoneFormatted})
-                    </span>
-                  </div>
-                  <span className="wa-dispatch-sub">
-                    Escolha por onde deseja abrir a conversa de confirmação:
+            <div className="login-form-group">
+              <label className="login-label">WhatsApp para Confirmação *</label>
+              <div className="login-input-wrapper">
+                <Phone size={17} className="login-input-icon" />
+                <input
+                  type="tel"
+                  className="login-input"
+                  placeholder="(11) 99999-9999"
+                  value={phone}
+                  onChange={(e) => setPhone(formatPhone(e.target.value))}
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="login-form-group">
+              <label className="login-label">É sua primeira vez na clínica?</label>
+              <div className="first-time-radio-group">
+                <button
+                  type="button"
+                  className={`first-time-pill ${isFirstTime === 'sim' ? 'active' : ''}`}
+                  onClick={() => setIsFirstTime('sim')}
+                >
+                  Sim, primeira sessão
+                </button>
+                <button
+                  type="button"
+                  className={`first-time-pill ${isFirstTime === 'nao' ? 'active' : ''}`}
+                  onClick={() => setIsFirstTime('nao')}
+                >
+                  Não, já sou paciente
+                </button>
+              </div>
+            </div>
+
+            <div className="login-form-group">
+              <label className="login-label">Motivo, dor ou objetivo principal</label>
+              <input
+                type="text"
+                className="login-input"
+                style={{ paddingLeft: 14 }}
+                placeholder="Ex: Dores lombares, reabilitação de joelho, pilates..."
+                value={reason}
+                onChange={(e) => setReason(e.target.value)}
+              />
+            </div>
+
+            {/* SELETOR DE CANAL: APLICATIVO VS WHATSAPP WEB */}
+            <div className="wa-dispatch-selector-box">
+              <div className="wa-dispatch-header">
+                <div className="wa-dispatch-title-row">
+                  <span className="wa-dispatch-label">Enviar diretamente para:</span>
+                  <span className="wa-dispatch-target-badge">
+                    <ShieldCheck size={13} />
+                    Dra. Ketllen Souza ({CLINIC_INFO.draPhoneFormatted || CLINIC_INFO.phoneFormatted})
                   </span>
                 </div>
-
-                <div className="wa-dispatch-toggle-grid">
-                  <button
-                    type="button"
-                    className={`wa-toggle-card ${sendMode === 'app' ? 'active' : ''}`}
-                    onClick={() => setSendMode('app')}
-                  >
-                    <div className="wa-toggle-icon">
-                      <Smartphone size={17} />
-                    </div>
-                    <div className="wa-toggle-texts">
-                      <strong>Aplicativo WhatsApp</strong>
-                      <span>Abre no App do celular ou computador</span>
-                    </div>
-                    {sendMode === 'app' && <span className="wa-toggle-check">✓</span>}
-                  </button>
-
-                  <button
-                    type="button"
-                    className={`wa-toggle-card ${sendMode === 'web' ? 'active' : ''}`}
-                    onClick={() => setSendMode('web')}
-                  >
-                    <div className="wa-toggle-icon">
-                      <Globe size={17} />
-                    </div>
-                    <div className="wa-toggle-texts">
-                      <strong>WhatsApp Web</strong>
-                      <span>Abre direto no navegador (sem instalar)</span>
-                    </div>
-                    {sendMode === 'web' && <span className="wa-toggle-check">✓</span>}
-                  </button>
-                </div>
+                <span className="wa-dispatch-sub">
+                  Escolha por onde deseja abrir a conversa de confirmação:
+                </span>
               </div>
 
-              <button type="submit" className="btn-login-submit btn-wa-submit">
-                <MessageCircle size={18} />
-                <span>
-                  Confirmar e Enviar para Dra. Ketllen ({sendMode === 'web' ? 'WhatsApp Web' : 'Aplicativo'})
-                </span>
-              </button>
-            </form>
-          </>
-        )}
-      </div>
-    </div>
+              <div className="wa-dispatch-toggle-grid">
+                <button
+                  type="button"
+                  className={`wa-toggle-card ${sendMode === 'app' ? 'active' : ''}`}
+                  onClick={() => setSendMode('app')}
+                >
+                  <div className="wa-toggle-icon">
+                    <Smartphone size={17} />
+                  </div>
+                  <div className="wa-toggle-texts">
+                    <strong>Aplicativo WhatsApp</strong>
+                    <span>Abre no App do celular ou computador</span>
+                  </div>
+                  {sendMode === 'app' && <span className="wa-toggle-check">✓</span>}
+                </button>
+
+                <button
+                  type="button"
+                  className={`wa-toggle-card ${sendMode === 'web' ? 'active' : ''}`}
+                  onClick={() => setSendMode('web')}
+                >
+                  <div className="wa-toggle-icon">
+                    <Globe size={17} />
+                  </div>
+                  <div className="wa-toggle-texts">
+                    <strong>WhatsApp Web</strong>
+                    <span>Abre direto no navegador (sem instalar)</span>
+                  </div>
+                  {sendMode === 'web' && <span className="wa-toggle-check">✓</span>}
+                </button>
+              </div>
+            </div>
+
+            <button type="submit" className="btn-login-submit btn-wa-submit">
+              <MessageCircle size={18} />
+              <span>
+                Confirmar e Enviar para Dra. Ketllen ({sendMode === 'web' ? 'WhatsApp Web' : 'Aplicativo'})
+              </span>
+            </button>
+          </form>
+        </>
+      )}
+    </Modal>
   );
 };
